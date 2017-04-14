@@ -53,11 +53,7 @@ public class MvpBasePresenter<V extends MvpView> implements MvpPresenter<V> {
 
     @Override
     public void detachView() {
-        if (mViewRef == null) {
-            return;
-        }
-        mViewRef.clear();
-        mViewRef = null;
+        clearViewRef();
     }
 
     // ========================================================================
@@ -70,6 +66,14 @@ public class MvpBasePresenter<V extends MvpView> implements MvpPresenter<V> {
 
     protected boolean isViewAttached() {
         return mViewRef != null && mViewRef.get() != null;
+    }
+
+    private void clearViewRef() {
+        if (mViewRef == null) {
+            return;
+        }
+        mViewRef.clear();
+        mViewRef = null;
     }
 
     // ========================================================================

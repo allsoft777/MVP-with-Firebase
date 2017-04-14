@@ -19,12 +19,14 @@ package com.seongil.mvplife.delegate.fragment;
 import android.os.Bundle;
 import android.view.View;
 
+import com.seongil.mvplife.base.MvpPresenter;
+import com.seongil.mvplife.base.MvpView;
+
 /**
  * Interface definition for a fragment delegation using by MVP architecture.
- * This interface is defined to attach the MvpView and MvpPresenter to the Fragment
+ * This interface is defined to attach the {@link MvpView} and {@link MvpPresenter} to the Fragment
  * and remove the boilerplate codes in creating an architecture of MVP base codes.
- * <p/>
- * All of methods defined this class MUST follow the fragment lifecycle.
+ * All methods defined this class MUST follow the fragment lifecycle.
  *
  * @author seong-il, kim
  * @since 17. 1. 6

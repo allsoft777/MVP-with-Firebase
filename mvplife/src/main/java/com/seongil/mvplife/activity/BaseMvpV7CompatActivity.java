@@ -37,6 +37,7 @@ public abstract class BaseMvpV7CompatActivity<V extends MvpView, P extends MvpBa
     // ========================================================================
     // methods for/from superclass/interfaces
     // ========================================================================
+    @Override
     public abstract P createPresenter();
 
     @Override
@@ -47,8 +48,8 @@ public abstract class BaseMvpV7CompatActivity<V extends MvpView, P extends MvpBa
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         getMvpDelegate().onDestroy();
+        super.onDestroy();
     }
 
     @Override

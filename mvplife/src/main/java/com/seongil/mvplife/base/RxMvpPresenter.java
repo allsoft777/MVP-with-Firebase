@@ -16,6 +16,8 @@
 
 package com.seongil.mvplife.base;
 
+import android.support.annotation.NonNull;
+
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
@@ -52,13 +54,16 @@ public class RxMvpPresenter<V extends MvpView> extends MvpBasePresenter<V> {
     public void detachView() {
         super.detachView();
         mCompositeDisposables.clear();
+        mCompositeDisposables = null;
     }
 
     // ========================================================================
     // methods
     // ========================================================================
-    protected void addSubscription(Disposable s) {
-        mCompositeDisposables.add(s);
+    protected void addDisposable(@NonNull Disposable s) {
+        if (mCompositeDisposables != null) {
+            mCompositeDisposables.add(s);
+        }
     }
 
     // ========================================================================

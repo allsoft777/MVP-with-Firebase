@@ -29,14 +29,14 @@ public interface MvpPresenter<V extends MvpView> {
     // ========================================================================
 
     /**
-     * Attach the mvp view to this mPresenter
+     * Attach the mvp view to the current presenter
      *
      * @param view MVP view
      */
     void attachView(V view);
 
     /**
-     * Detach the attached view from this mPresenter
+     * Detach the attached mvp view from the current presenter
      */
     void detachView();
 }

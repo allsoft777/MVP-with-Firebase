@@ -55,9 +55,9 @@ public class MvpActivityDelegateImpl<V extends MvpView, P extends MvpBasePresent
     // ========================================================================
     // methods
     // ========================================================================
-    protected MvpDelegateImpl<V, P> getDelegateImpl() {
+    private MvpDelegateImpl<V, P> getDelegateImpl() {
         if (mDelegateImpl == null) {
-            mDelegateImpl = new MvpDelegateImpl<V, P>(mCallback);
+            mDelegateImpl = new MvpDelegateImpl<>(mCallback);
         }
 
         return mDelegateImpl;

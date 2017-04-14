@@ -23,7 +23,7 @@ import android.view.View;
  * @author seong-il, kim
  * @since 17. 1. 6
  */
-public interface FragmentViewBinder {
+public interface MvpViewBinder {
 
     // ========================================================================
     // constants

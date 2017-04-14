@@ -26,7 +26,7 @@ import com.seongil.mvplife.delegate.fragment.MvpFragmentDelegate;
 import com.seongil.mvplife.delegate.fragment.MvpFragmentDelegateImpl;
 
 /**
- * Abstract class for the fragment wihch is holding a reference of the {@link MvpPresenter}
+ * Abstract class for the fragment which is holding a reference of the {@link MvpPresenter}
  * Also, holding a {@link MvpFragmentDelegate} which is handling the lifecycle of the fragment.
  *
  * @param <V> The type of {@link MvpView}
@@ -59,6 +59,7 @@ public abstract class BaseMvpFragment<V extends MvpView, P extends MvpPresenter<
     // ========================================================================
     // Methods for/from SuperClass/Interfaces
     // ========================================================================
+    @Override
     public abstract P createPresenter();
 
     @Override
