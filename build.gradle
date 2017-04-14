@@ -1,0 +1,24 @@
+apply from: 'buildsystem/dependencies.gradle'
+
+subprojects {
+    buildscript {
+        repositories {
+            mavenCentral()
+            jcenter()
+        }
+        dependencies {
+            classpath 'com.android.tools.build:gradle:2.2.2'
+            classpath 'com.google.gms:google-services:3.0.0'
+            classpath 'me.tatarka:gradle-retrolambda:3.5.0'
+        }
+    }
+
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}

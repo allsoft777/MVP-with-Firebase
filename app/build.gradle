@@ -1,0 +1,150 @@
+apply plugin: 'com.android.application'
+apply plugin: 'me.tatarka.retrolambda'
+
+apply plugin: 'findbugs'
+task findbugs(type: FindBugs) {
+    ignoreFailures = true
+    classes = files("$project.buildDir/intermediates/classes/")
+    classpath = files()
+    source 'src'
+    include '**/*.java'
+    exclude '**/gen/**'
+    excludeFilter = file(rootDir.path + "/buildsystem/ci/findbugs_exclude.xml")
+
+    effort = 'max'
+    reportLevel = "high"
+
+    reports {
+        xml.enabled = true
+        html.enabled = false
+    }
+}
+
+apply plugin: 'pmd'
+task pmd(type: Pmd) {
+    ignoreFailures = true
+    ruleSetFiles = files(rootDir.path + "/buildsystem/ci/pmd_ruleset.xml")
+    ruleSets = []
+    source 'src'
+    include '**/*.java'
+    exclude '**/gen/**'
+
+    reports {
+        xml.enabled = true
+        html.enabled = false
+    }
+}
+
+android {
+    compileSdkVersion COMPILE_SDK_VERSION as int
+    buildToolsVersion BUILD_TOOLS_VERSION
+
+    compileOptions {
+        sourceCompatibility rootProject.ext.sourceCompatibility
+        targetCompatibility rootProject.ext.sourceCompatibility
+    }
+
+    defaultConfig {
+        applicationId "com.seongil.mvplife.sample"
+        minSdkVersion MIN_SDK_VERSION as int
+        targetSdkVersion TARGET_SDK_VERSION as int
+        versionCode VERSION_CODE_APP as int
+        versionName VERSION_NAME_APP
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        applicationVariants.all { variant ->
+            variant.outputs.each { output ->
+                output.outputFile = new File(output.outputFile.parent,
+                    output.outputFile.name.replace(".apk", "-${variant.versionName}.apk"))
+            }
+        }
+
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    lintOptions {
+        def options = rootProject.ext.lintoptions
+
+        quiet options.quiet
+        abortOnError options.abortOnError
+        ignoreWarnings options.ignorewarnings
+        checkAllWarnings options.checkAllWarnings
+        checkReleaseBuilds options.checkReleaseBuilds
+        noLines options.noLines
+        showAll options.showAll
+        lintConfig file(rootDir.path + "/buildsystem/ci/lint.xml")
+        htmlReport options.htmlReport
+        xmlReport options.xmlReport
+        textReport true
+        textOutput 'stdout'
+    }
+}
+
+dependencies {
+    compile(project(':mvplife'))
+
+    /**
+     * Google Support Library
+     */
+    def googleDependencies = rootProject.ext.googleDependencies
+    compile googleDependencies.supportV4
+    compile googleDependencies.recyclerview
+    compile googleDependencies.appCompatV7
+    compile googleDependencies.annotation
+    compile googleDependencies.design
+
+    /**
+     * Google Firebase Library
+     */
+    compile googleDependencies.firebaseCore
+    compile googleDependencies.playServiceAuth
+    compile googleDependencies.firebaseAuth
+
+    /**
+     * Library
+     */
+    def libraryDependencies = rootProject.ext.libraryDependencies
+    retrolambdaConfig libraryDependencies.retroLambda
+    compile(libraryDependencies.rxAndroid) {
+        exclude group: 'io.reactivex.rxjava2', module: 'rxjava2'
+    }
+    compile libraryDependencies.rxbinding
+    compile libraryDependencies.guava
+    compile libraryDependencies.glide
+    compile libraryDependencies.glideTransformations
+    compile libraryDependencies.recyclerviewLife
+//    compile libraryDependencies.avatarPicker
+
+    debugCompile libraryDependencies.leakCanaryDebug
+    releaseCompile libraryDependencies.leakCanaryRelease
+
+    /**
+     * Test Dependency
+     */
+    def testDependencies = rootProject.ext.testDependencies
+    testCompile(testDependencies.junit) {
+        exclude group: 'org.hamcrest', module: 'hamcrest-core'
+    }
+    testCompile(testDependencies.mockito) {
+        exclude group: 'org.hamcrest', module: 'hamcrest-core'
+    }
+    testCompile(testDependencies.powermockJunit) {
+        exclude group: 'junit', module: 'junit'
+    }
+    testCompile(testDependencies.robolectric) {
+        exclude group: 'junit', module: 'junit'
+        exclude group: 'com.google.guava', module: 'guava'
+    }
+    testCompile testDependencies.hamcrest
+    testCompile testDependencies.powermockMockito
+    testCompile(testDependencies.robolectricShadowsHttpClient) {
+        exclude group: 'org.robolectric', module: 'robolectric'
+    }
+}
+
+apply plugin: 'com.google.gms.google-services'
