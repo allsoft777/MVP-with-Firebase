@@ -64,10 +64,10 @@ public class LoginPresenter extends MvpBasePresenter<LoginView> {
               .authStateChanged(auth)
               .subscribeOn(Schedulers.io())
               .observeOn(AndroidSchedulers.mainThread())
-              .filter(firebaseAuth -> isViewAttached())
-              .doOnNext(firebaseAuth -> getView().hideProgressDialog())
+              .filter(fireBaseAuth -> isViewAttached())
+              .doOnNext(fireBaseAuth -> getView().hideProgressDialog())
               .subscribe(
-                    firebaseAuth -> handleSucceedAuth(firebaseAuth),
+                    this::handleSucceedAuth,
                     t -> getView().renderErrorMsg(t.getMessage())
               );
     }
@@ -119,7 +119,7 @@ public class LoginPresenter extends MvpBasePresenter<LoginView> {
         if (user != null) {
             getView().renderSignedInUser(user);
         } else {
-            getView().renderSignedOutUser(user);
+            getView().renderSignedOutUser();
         }
     }
 

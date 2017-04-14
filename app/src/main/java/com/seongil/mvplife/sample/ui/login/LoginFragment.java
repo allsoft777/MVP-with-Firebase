@@ -3,10 +3,9 @@ package com.seongil.mvplife.sample.ui.login;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -71,6 +70,7 @@ public class LoginFragment extends BaseMvpFragmentV4<LoginView, LoginPresenter> 
     // ========================================================================
     // methods for/from superclass/interfaces
     // ========================================================================
+    @NonNull
     @Override
     public LoginPresenter createPresenter() {
         return new LoginPresenter();
@@ -101,18 +101,15 @@ public class LoginFragment extends BaseMvpFragmentV4<LoginView, LoginPresenter> 
               .throttleFirst(1, TimeUnit.SECONDS, AndroidSchedulers.mainThread())
               .subscribe(v -> signIn());
 
-        Button signOutbnt = (Button) view.findViewById(R.id.sign_out_button);
-        RxView.clicks(signOutbnt)
+        RxView.clicks(view.findViewById(R.id.sign_out_button))
               .throttleFirst(1, TimeUnit.SECONDS, AndroidSchedulers.mainThread())
               .subscribe(v -> signOut());
 
-        Button disconnectBtn = (Button) view.findViewById(R.id.disconnect_button);
-        RxView.clicks(disconnectBtn)
+        RxView.clicks(view.findViewById(R.id.disconnect_button))
               .throttleFirst(1, TimeUnit.SECONDS, AndroidSchedulers.mainThread())
               .subscribe(v -> revokeAccess());
 
-        Button enjoyBtn = (Button) view.findViewById(R.id.goto_main_button);
-        RxView.clicks(enjoyBtn)
+        RxView.clicks(view.findViewById(R.id.goto_main_button))
               .throttleFirst(1, TimeUnit.SECONDS, AndroidSchedulers.mainThread())
               .subscribe(v -> launchMainView());
 
@@ -141,7 +138,7 @@ public class LoginFragment extends BaseMvpFragmentV4<LoginView, LoginPresenter> 
                 GoogleSignInAccount account = result.getSignInAccount();
                 firebaseAuthWithGoogle(account);
             } else {
-                renderSignedOutUser(null);
+                renderSignedOutUser();
             }
         }
     }
@@ -199,7 +196,7 @@ public class LoginFragment extends BaseMvpFragmentV4<LoginView, LoginPresenter> 
     }
 
     @Override
-    public void renderSignedOutUser(@Nullable FirebaseUser firebaseUser) {
+    public void renderSignedOutUser() {
         mStatusTextView.setText(R.string.signed_out);
         mDetailTextView.setText(null);
         mSignInBtn.setVisibility(View.VISIBLE);
@@ -215,7 +212,7 @@ public class LoginFragment extends BaseMvpFragmentV4<LoginView, LoginPresenter> 
 
     @Override
     public void onGoogleSignOut(Status status) {
-        renderSignedOutUser(null);
+        renderSignedOutUser();
     }
 
     @Override

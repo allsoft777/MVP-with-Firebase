@@ -67,30 +67,30 @@
             android:visibility="gone"
             tools:visibility="visible">
 
-            <Button
+            <TextView
                 android:id="@+id/sign_out_button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/sign_out"
-                android:theme="@style/ThemeOverlay.MyDarkButton"/>
+                android:gravity="center_horizontal"
+                android:text="@string/sign_out"/>
 
-            <Button
+            <TextView
                 android:id="@+id/disconnect_button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/disconnect"
-                android:theme="@style/ThemeOverlay.MyDarkButton"/>
+                android:gravity="center_horizontal"
+                android:text="@string/disconnect"/>
 
-            <Button
+            <TextView
                 android:id="@+id/goto_main_button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:gravity="center_horizontal"
                 android:padding="5dp"
-                android:text="@string/go_to_main"
-                android:theme="@style/ThemeOverlay.MyDarkButton"/>
+                android:text="@string/go_to_main"/>
 
         </LinearLayout>
 

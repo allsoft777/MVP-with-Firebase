@@ -1,7 +1,5 @@
 package com.seongil.mvplife.sample.ui.login;
 
-import android.support.annotation.Nullable;
-
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.tasks.Task;
@@ -34,7 +32,7 @@ public interface LoginView extends MvpView {
 
     void renderSignedInUser(FirebaseUser firebaseUser);
 
-    void renderSignedOutUser(@Nullable FirebaseUser firebaseUser);
+    void renderSignedOutUser();
 
     void onGoogleSignOut(Status status);
 
