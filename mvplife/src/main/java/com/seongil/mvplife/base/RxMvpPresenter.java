@@ -16,6 +16,8 @@
 
 package com.seongil.mvplife.base;
 
+import java.util.concurrent.Callable;
+
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
@@ -37,9 +39,6 @@ public class RxMvpPresenter<V extends MvpView> extends MvpBasePresenter<V> {
     // ========================================================================
     // constructors
     // ========================================================================
-    public RxMvpPresenter() {
-        mCompositeDisposables = new CompositeDisposable();
-    }
 
     // ========================================================================
     // getter & setter
@@ -49,16 +48,36 @@ public class RxMvpPresenter<V extends MvpView> extends MvpBasePresenter<V> {
     // methods for/from superclass/interfaces
     // ========================================================================
     @Override
+    public void attachView(V view) {
+        super.attachView(view);
+        mCompositeDisposables = new CompositeDisposable();
+    }
+
+    @Override
     public void detachView() {
         super.detachView();
-        mCompositeDisposables.clear();
+        if (mCompositeDisposables != null) {
+            mCompositeDisposables.clear();
+            mCompositeDisposables = null;
+        }
     }
 
     // ========================================================================
     // methods
     // ========================================================================
     protected void addSubscription(Disposable s) {
-        mCompositeDisposables.add(s);
+        if (mCompositeDisposables != null) {
+            mCompositeDisposables.add(s);
+        }
+    }
+
+    protected Callable<Boolean> isViewAttachedCallable() {
+        return new Callable<Boolean>() {
+            @Override
+            public Boolean call() throws Exception {
+                return isViewAttached();
+            }
+        };
     }
 
     // ========================================================================
