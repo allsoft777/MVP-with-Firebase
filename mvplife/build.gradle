@@ -198,7 +198,7 @@ bintray {
         repo = 'maven'
         name = POM_NAME
         licenses = ['Apache-2.0']
-        labels = ['recyclerview', 'listview', 'android']
+        labels = ['android', 'mvp']
         websiteUrl = POM_URL
         issueTrackerUrl = POM_URL_ISSUE
         vcsUrl = POM_VCS_URL
