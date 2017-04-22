@@ -28,7 +28,7 @@
             android:id="@+id/thumbnail"
             android:layout_width="128dp"
             android:layout_height="128dp"
-            android:src="@drawable/default_user_profile"/>
+            android:src="@drawable/user_profile_placeholder"/>
 
         <TextView
             android:id="@+id/status"

@@ -18,13 +18,10 @@ package com.seongil.mvplife.sample.application;
 
 import android.app.Application;
 import android.content.Context;
-import android.os.StrictMode;
 
+import com.seongil.mvplife.sample.common.rxskyrail.RxSkyRail;
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
-
-import static android.os.Build.VERSION.SDK_INT;
-import static android.os.Build.VERSION_CODES.GINGERBREAD;
 
 /**
  * @author seong-il, kim
@@ -41,6 +38,7 @@ public class MainApplication extends Application {
     // ========================================================================
     private RefWatcher mRefWatcher;
     private static MainApplication sInstance;
+    private static RxSkyRail sSkyRail;
 
     // ========================================================================
     // constructors
@@ -60,11 +58,11 @@ public class MainApplication extends Application {
     public void onCreate() {
         super.onCreate();
         sInstance = this;
+        sSkyRail = new RxSkyRail();
         if (LeakCanary.isInAnalyzerProcess(this)) {
             return;
         }
 
-        enabledStrictMode();
         mRefWatcher = LeakCanary.install(this);
     }
 
@@ -75,14 +73,8 @@ public class MainApplication extends Application {
         return sInstance.getApplicationContext();
     }
 
-    private void enabledStrictMode() {
-        if (SDK_INT >= GINGERBREAD) {
-            StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
-                  .detectAll()
-                  .penaltyLog()
-                  .penaltyDeath()
-                  .build());
-        }
+    public static RxSkyRail getSkyRail() {
+        return sSkyRail;
     }
 
     // ========================================================================

@@ -5,12 +5,23 @@
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
     android:orientation="vertical"
-    android:paddingTop="50dp">
+    android:paddingTop="10dp">
 
-    <ImageView
-        android:id="@+id/user_profile_thumbnail"
-        android:layout_width="@dimen/user_profile_thumbnail_size"
-        android:layout_height="@dimen/user_profile_thumbnail_size"/>
+    <RelativeLayout
+        android:layout_width="@dimen/user_profile_thumbnail_outline_size"
+        android:layout_height="@dimen/user_profile_thumbnail_outline_size"
+        android:background="@drawable/circle_border_128radius">
+
+        <ImageView
+            android:id="@+id/user_profile_thumbnail"
+            android:layout_width="@dimen/user_profile_thumbnail_size"
+            android:layout_height="@dimen/user_profile_thumbnail_size"
+            android:layout_centerInParent="true"
+            android:src="@drawable/user_profile_placeholder"/>
+
+        <include layout="@layout/merge_common_loading_view"/>
+
+    </RelativeLayout>
 
     <android.support.v4.widget.Space
         android:layout_width="match_parent"
@@ -19,6 +30,14 @@
     <TextView
         android:id="@+id/name"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/sans_serif_20_regular"/>
+
+    <TextView
+        android:id="@+id/email_address"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:textAppearance="@style/sans_serif_20_regular"/>
 
 </LinearLayout>

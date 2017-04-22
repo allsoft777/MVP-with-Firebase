@@ -57,7 +57,8 @@ ext {
     leakCanary = '1.5'
     rxbinding = '2.0.0'
     recyclerviewLife = '1.0.2'
-    avatarpicker = '1.0.0'
+    mvpLife = '1.0.0'
+    imageCropper = '2.4.0'
 
     // ========================================================================
     // Dependency Scopes
@@ -72,6 +73,7 @@ ext {
         firebaseCore   : "com.google.firebase:firebase-core:${playService}",
         playServiceAuth: "com.google.android.gms:play-services-auth:${playService}",
         firebaseAuth   : "com.google.firebase:firebase-auth:${playService}",
+        firebaseStorage: "com.google.firebase:firebase-storage:${playService}",
     ]
 
     testDependencies = [
@@ -95,7 +97,8 @@ ext {
         leakCanaryRelease   : "com.squareup.leakcanary:leakcanary-android-no-op:${leakCanary}",
         rxbinding           : "com.jakewharton.rxbinding2:rxbinding:${rxbinding}",
         recyclerviewLife    : "com.seongil:recyclerviewlife:${recyclerviewLife}",
-        avatarPicker        : "com.seongil:avatarpicker:${avatarpicker}",
+        mvpLife             : "com.seongil:mvplife:${mvpLife}",
+        imageCropper        : "com.theartofdev.edmodo:android-image-cropper:${imageCropper}",
     ]
 }
 

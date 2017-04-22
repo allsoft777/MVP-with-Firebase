@@ -25,7 +25,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.seongil.mvplife.fragment.BaseMvpFragmentV4;
 import com.seongil.mvplife.sample.R;
-import com.seongil.mvplife.sample.common.auth.firebase.exception.GoogleApiClientConnectionFailThrowable;
+import com.seongil.mvplife.sample.common.firebase.exception.GoogleApiClientConnectionFailThrowable;
+import com.seongil.mvplife.sample.ui.main.MainActivity;
 
 import java.util.concurrent.TimeUnit;
 
@@ -185,13 +186,12 @@ public class LoginFragment extends BaseMvpFragmentV4<LoginView, LoginPresenter> 
         mDetailTextView.setText(getString(R.string.firebase_status_fmt, firebaseUser.getUid()));
         mSignInBtn.setVisibility(View.GONE);
         mSignOutAndDisconnectContainer.setVisibility(View.VISIBLE);
-
         Glide
               .with(this)
               .fromUri()
               .load(firebaseUser.getPhotoUrl())
               .bitmapTransform(new CropCircleTransformation(getActivity().getApplicationContext()))
-              .placeholder(R.drawable.default_user_profile)
+              .placeholder(R.drawable.user_profile_placeholder)
               .into(mUserThumbnail);
     }
 
@@ -201,11 +201,10 @@ public class LoginFragment extends BaseMvpFragmentV4<LoginView, LoginPresenter> 
         mDetailTextView.setText(null);
         mSignInBtn.setVisibility(View.VISIBLE);
         mSignOutAndDisconnectContainer.setVisibility(View.GONE);
-
         Glide
               .with(this)
               .fromResource()
-              .load(R.drawable.default_user_profile)
+              .load(R.drawable.user_profile_placeholder)
               .bitmapTransform(new CropCircleTransformation(getActivity().getApplicationContext()))
               .into(mUserThumbnail);
     }
@@ -249,6 +248,8 @@ public class LoginFragment extends BaseMvpFragmentV4<LoginView, LoginPresenter> 
     }
 
     private void launchMainView() {
+        Intent intent = new Intent(getActivity(), MainActivity.class);
+        startActivity(intent);
     }
 
     // ========================================================================

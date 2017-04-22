@@ -10,8 +10,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.seongil.mvplife.base.MvpBasePresenter;
-import com.seongil.mvplife.sample.common.auth.firebase.RxFirebaseAuth;
-import com.seongil.mvplife.sample.common.auth.google.RxGoogleApiClient;
+import com.seongil.mvplife.sample.common.firebase.auth.RxFirebaseAuth;
+import com.seongil.mvplife.sample.common.google.RxGoogleApiClient;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;

@@ -7,8 +7,6 @@
     android:background="@color/foreground1"
     android:fitsSystemWindows="true">
 
-    <include
-        android:id="@+id/profile_container"
-        layout="@layout/merge_nav_drawer_profile"/>
+    <include layout="@layout/merge_nav_drawer_profile"/>
 
 </LinearLayout>
