@@ -6,11 +6,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
@@ -26,12 +23,11 @@ import com.jakewharton.rxbinding2.view.RxView;
 import com.seongil.mvplife.fragment.BaseMvpFragmentV4;
 import com.seongil.mvplife.sample.R;
 import com.seongil.mvplife.sample.common.firebase.exception.GoogleApiClientConnectionFailThrowable;
-import com.seongil.mvplife.sample.ui.main.MainActivity;
+import com.seongil.mvplife.sample.ui.cliplist.activity.ClipItemListActivity;
 
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import jp.wasabeef.glide.transformations.CropCircleTransformation;
 
 /**
  * @author seong-il, kim
@@ -49,13 +45,10 @@ public class LoginFragment extends BaseMvpFragmentV4<LoginView, LoginPresenter> 
     // fields
     // ========================================================================
     private ProgressDialog mProgressDialog;
-    private FirebaseAuth mFirebaseAuth;
+    private FirebaseAuth mFireBaseAuth;
     private GoogleApiClient mGoogleApiClient;
-    private TextView mStatusTextView;
-    private TextView mDetailTextView;
-    private ImageView mUserThumbnail;
     private SignInButton mSignInBtn;
-    private View mSignOutAndDisconnectContainer;
+    private boolean mLaunchedMainView;
 
     // ========================================================================
     // constructors
@@ -92,36 +85,19 @@ public class LoginFragment extends BaseMvpFragmentV4<LoginView, LoginPresenter> 
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mStatusTextView = (TextView) view.findViewById(R.id.status);
-        mDetailTextView = (TextView) view.findViewById(R.id.detail);
-        mUserThumbnail = (ImageView) view.findViewById(R.id.thumbnail);
-        mSignOutAndDisconnectContainer = view.findViewById(R.id.sign_out_and_disconnect);
-
         mSignInBtn = (SignInButton) view.findViewById(R.id.sign_in_button);
         RxView.clicks(mSignInBtn)
               .throttleFirst(1, TimeUnit.SECONDS, AndroidSchedulers.mainThread())
               .subscribe(v -> signIn());
 
-        RxView.clicks(view.findViewById(R.id.sign_out_button))
-              .throttleFirst(1, TimeUnit.SECONDS, AndroidSchedulers.mainThread())
-              .subscribe(v -> signOut());
-
-        RxView.clicks(view.findViewById(R.id.disconnect_button))
-              .throttleFirst(1, TimeUnit.SECONDS, AndroidSchedulers.mainThread())
-              .subscribe(v -> revokeAccess());
-
-        RxView.clicks(view.findViewById(R.id.goto_main_button))
-              .throttleFirst(1, TimeUnit.SECONDS, AndroidSchedulers.mainThread())
-              .subscribe(v -> launchMainView());
-
         getPresenter().signInGoogle(getActivity());
-        mFirebaseAuth = FirebaseAuth.getInstance();
+        mFireBaseAuth = FirebaseAuth.getInstance();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        getPresenter().checkFirebaseAuthState(mFirebaseAuth);
+        getPresenter().checkFirebaseAuthState(mFireBaseAuth);
     }
 
     @Override
@@ -148,7 +124,7 @@ public class LoginFragment extends BaseMvpFragmentV4<LoginView, LoginPresenter> 
     public void showProgressDialog() {
         if (mProgressDialog == null) {
             mProgressDialog = new ProgressDialog(getActivity());
-            mProgressDialog.setMessage(getString(R.string.loading));
+            mProgressDialog.setMessage(getString(R.string.msg_loading));
             mProgressDialog.setIndeterminate(true);
         }
         mProgressDialog.show();
@@ -182,31 +158,13 @@ public class LoginFragment extends BaseMvpFragmentV4<LoginView, LoginPresenter> 
 
     @Override
     public void renderSignedInUser(FirebaseUser firebaseUser) {
-        mStatusTextView.setText(getString(R.string.google_status_fmt, firebaseUser.getEmail()));
-        mDetailTextView.setText(getString(R.string.firebase_status_fmt, firebaseUser.getUid()));
         mSignInBtn.setVisibility(View.GONE);
-        mSignOutAndDisconnectContainer.setVisibility(View.VISIBLE);
-        Glide
-              .with(this)
-              .fromUri()
-              .load(firebaseUser.getPhotoUrl())
-              .bitmapTransform(new CropCircleTransformation(getActivity().getApplicationContext()))
-              .placeholder(R.drawable.user_profile_placeholder)
-              .into(mUserThumbnail);
+        launchMainView();
     }
 
     @Override
     public void renderSignedOutUser() {
-        mStatusTextView.setText(R.string.signed_out);
-        mDetailTextView.setText(null);
         mSignInBtn.setVisibility(View.VISIBLE);
-        mSignOutAndDisconnectContainer.setVisibility(View.GONE);
-        Glide
-              .with(this)
-              .fromResource()
-              .load(R.drawable.user_profile_placeholder)
-              .bitmapTransform(new CropCircleTransformation(getActivity().getApplicationContext()))
-              .into(mUserThumbnail);
     }
 
     @Override
@@ -231,7 +189,7 @@ public class LoginFragment extends BaseMvpFragmentV4<LoginView, LoginPresenter> 
     // methods
     // ========================================================================
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
-        getPresenter().firebaseAuthWithGoogle(mFirebaseAuth, acct);
+        getPresenter().firebaseAuthWithGoogle(mFireBaseAuth, acct);
     }
 
     private void signIn() {
@@ -239,17 +197,14 @@ public class LoginFragment extends BaseMvpFragmentV4<LoginView, LoginPresenter> 
         startActivityForResult(intent, RC_SIGN_IN);
     }
 
-    private void signOut() {
-        getPresenter().signOut(mFirebaseAuth, mGoogleApiClient);
-    }
-
-    private void revokeAccess() {
-        getPresenter().revokeAccessFromGoogleApiClient(mFirebaseAuth, mGoogleApiClient);
-    }
-
     private void launchMainView() {
-        Intent intent = new Intent(getActivity(), MainActivity.class);
+        if (mLaunchedMainView) {
+            return;
+        }
+        mLaunchedMainView = true;
+        Intent intent = new Intent(getActivity(), ClipItemListActivity.class);
         startActivity(intent);
+        getActivity().finish();
     }
 
     // ========================================================================

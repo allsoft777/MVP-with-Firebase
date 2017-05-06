@@ -4,24 +4,24 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <LinearLayout
-        android:id="@+id/error_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/error_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
         android:visibility="gone">
 
         <ImageView
             android:id="@+id/error_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_width="@dimen/common_recycler_view_error_icon_size"
+            android:layout_height="@dimen/common_recycler_view_error_icon_size"/>
 
         <TextView
             android:id="@+id/error_msg"
             android:layout_width="150dp"
             android:layout_height="150dp"
-            android:layout_gravity="center"
-            android:gravity="center"
+            android:gravity="center_horizontal"
             android:padding="16dp"
             android:text="@string/error"
-            android:textSize="15dp"/>
+            android:textSize="14dp"/>
     </LinearLayout>
 </merge>

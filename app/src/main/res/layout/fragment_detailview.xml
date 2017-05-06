@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/content_container"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/soft_menu_container"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_gravity="bottom"
+        android:background="@color/soft_button_container_background"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_close"
+            android:background="@drawable/selector_ic_back"
+            style="@style/DetailView_SoftButton"/>
+
+        <Button
+            android:id="@+id/btn_toggle_edit"
+            android:background="@drawable/selector_ic_read_only"
+            style="@style/DetailView_SoftButton"/>
+
+        <Button
+            android:id="@+id/btn_favourites"
+            android:background="@drawable/selector_ic_favorite_false"
+            style="@style/DetailView_SoftButton"/>
+
+        <Button
+            android:id="@+id/btn_share"
+            android:background="@drawable/selector_ic_share"
+            style="@style/DetailView_SoftButton"/>
+
+        <Button
+            android:id="@+id/btn_copy"
+            android:background="@drawable/selector_ic_copy"
+            style="@style/DetailView_SoftButton"/>
+
+        <Button
+            android:id="@+id/btn_delete"
+            android:background="@drawable/selector_ic_delete"
+            style="@style/DetailView_SoftButton"/>
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -3,27 +3,15 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
 
-    <dimen name="navigation_drawer_width">250dp</dimen>
-    <dimen name="navigation_drawer_profile_thumbnail_size">45dp</dimen>
-
-    <dimen name="user_profile_thumbnail_size">256dp</dimen>
-    <dimen name="user_profile_thumbnail_outline_size">260dp</dimen>
-
-    <dimen name="user_profile_list_size">48dp</dimen>
-
-    <dimen name="common_list_item_min_height">45dp</dimen>
-    <dimen name="common_list_item_min_width">350dp</dimen>
-    <dimen name="common_list_item_two_lines_height">68dp</dimen>
-    <dimen name="common_list_padding_side">24dp</dimen>
-    <dimen name="common_list_check_box_padding_side">18dp</dimen>
+    <dimen name="common_recycler_view_empty_icon_size">65dp</dimen>
+    <dimen name="common_recycler_view_error_icon_size">65dp</dimen>
 
     <dimen name="common_loading_view_size">64dp</dimen>
-    <dimen name="common_button_min_height">48dp</dimen>
     <dimen name="common_button_padding">3dp</dimen>
 
-    <dimen name="primary_text_size">17dp</dimen>
-    <dimen name="secondary_text_size">13dp</dimen>
+    <dimen name="common_list_item_min_height">45dp</dimen>
+    <dimen name="common_list_item_padding_top_down">5dp</dimen>
 
-    <dimen name="group_add_item_ic_size">32dp</dimen>
-    <dimen name="common_empty_icon_size">100dp</dimen>
+    <dimen name="list_item_copy_image_size">34dp</dimen>
+    <dimen name="list_item_favorite">32dp</dimen>
 </resources>

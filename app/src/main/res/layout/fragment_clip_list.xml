@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:id="@+id/list_view_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingBottom="@dimen/common_list_item_min_height">
+
+        <include layout="@layout/merge_recycler_view_set"/>
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/input_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/list_view_container"
+        android:background="@color/soft_button_container_background"
+        android:gravity="center_vertical"
+        android:minHeight="@dimen/common_list_item_min_height"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/make_notes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/activity_horizontal_margin"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:focusable="false"
+            android:hint="@string/msg_hint_make_notes"
+            android:selectAllOnFocus="false"
+            android:textStyle="bold"/>
+
+    </LinearLayout>
+
+</RelativeLayout>

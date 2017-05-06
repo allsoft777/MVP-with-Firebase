@@ -5,7 +5,7 @@ import io.reactivex.subjects.PublishSubject;
 
 /**
  * @author seong-il, kim
- * @since 17. 4. 11
+ * @since 17. 4. 30
  */
 public class RxSkyRail {
 

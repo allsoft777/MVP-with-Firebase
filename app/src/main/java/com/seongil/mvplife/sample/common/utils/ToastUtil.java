@@ -6,7 +6,7 @@ import com.seongil.mvplife.sample.application.MainApplication;
 
 /**
  * @author seong-il, kim
- * @since 17. 4. 10
+ * @since 17. 4. 30
  */
 public class ToastUtil {
 
@@ -34,7 +34,7 @@ public class ToastUtil {
     // methods
     // ========================================================================
     public static void showToast(String msg) {
-        showToast(msg, Toast.LENGTH_SHORT);
+        showToast(msg, Toast.LENGTH_LONG);
     }
 
     public static void showToast(String msg, int duration) {

@@ -105,6 +105,7 @@ dependencies {
     compile googleDependencies.playServiceAuth
     compile googleDependencies.firebaseAuth
     compile googleDependencies.firebaseStorage
+    compile googleDependencies.firebaseDatabase
 
     /**
      * Library
@@ -116,12 +117,7 @@ dependencies {
     }
     compile libraryDependencies.rxbinding
     compile libraryDependencies.guava
-    compile libraryDependencies.glide
-    compile libraryDependencies.glideTransformations
     compile libraryDependencies.recyclerviewLife
-    compile(libraryDependencies.imageCropper) {
-        exclude group: 'com.android.support', module: 'appcompat-v7'
-    }
 
     debugCompile libraryDependencies.leakCanaryDebug
     releaseCompile libraryDependencies.leakCanaryRelease

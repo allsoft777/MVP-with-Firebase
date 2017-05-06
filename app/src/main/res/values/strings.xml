@@ -1,34 +1,23 @@
 <resources>
-    <string name="app_name">Firebase Playground</string>
-
-    <string name="sign_out">Sign Out</string>
-    <string name="disconnect">Disconnect</string>
-    <string name="loading">Loading…</string>
-    <string name="signed_out">Signed Out</string>
+    <string name="app_name">ClipDiary</string>
     <string name="error">Error</string>
-    <string name="home">Home</string>
-    <string name="new_alarm">News Feed</string>
-    <string name="settings">Settings</string>
+    <string name="confirm">Confirm</string>
+    <string name="no">NO</string>
+    <string name="detail_view">Detail View</string>
+    <string name="edit_view">Edit View</string>
+    <string name="exit_confirm_dialog">Exit Confirmation</string>
 
-    <string name="firebase_status_fmt">Firebase User: %s</string>
-    <string name="google_status_fmt">Google User: %s</string>
-    <string name="google_title_text">Google Sign In</string>
-    <string name="go_to_main">Start enjoy</string>
-
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
-
-    <string name="picture_chooser_menu_default">Set default avatar</string>
-    <string name="picture_chooser_menu_gallery_camera">Choose a picture</string>
-    <string name="picture_chooser_menu_chooser_from_gallery">Choose from gallery app</string>
-    <string name="picture_chooser_menu_take_pic">Take picture from camera</string>
-
-    <string name="main_action_rotate">Rotate 90 degrees clockwise</string>
-    <string name="image_cropper_flip">Flip</string>
-    <string name="image_cropper_flip_horizontally">Flip horizontally</string>
-    <string name="image_cropper_flip_vertically">Flip vertically</string>
-    <string name="image_cropper_crop">CROP</string>
-
-    <string name="permission_is_not_granted">Cancelling, required permissions are not granted</string>
-
+    <string name="msg_hint_make_notes">Make notes…</string>
+    <string name="msg_inserting">Inserting…</string>
+    <string name="msg_deleting">Deleting…</string>
+    <string name="msg_updating">Updating…</string>
+    <string name="msg_loading">Loading…</string>
+    <string name="msg_touch_to_add_item">Touch here to add an item.</string>
+    <string name="msg_added_new_item">Added new item.</string>
+    <string name="msg_success_to_update_clip_item">Clip data has been updated successfully.</string>
+    <string name="msg_remove_successfully">Clip item has been deleted successfully.</string>
+    <string name="msg_insert_new_item">Are you sure you want to add new item?</string>
+    <string name="msg_exit_with_saving_item">Do you want to exit after saving?</string>
+    <string name="msg_success_to_add_favourites_item">Clip item has been successfully added to Favourites.</string>
+    <string name="msg_success_to_remove_favourites_item">Clip item has been successfully removed from Favourites.</string>
 </resources>

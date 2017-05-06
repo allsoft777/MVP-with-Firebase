@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 
 import com.seongil.mvplife.sample.R;
-import com.seongil.mvplife.sample.ui.common.BaseActivity;
+import com.seongil.mvplife.sample.ui.base.BaseActivity;
 
 /**
  * @author seong-il, kim
@@ -31,10 +31,6 @@ public class LoginActivity extends BaseActivity {
     // ========================================================================
     // methods for/from superclass/interfaces
     // ========================================================================
-
-    // ========================================================================
-    // methods
-    // ========================================================================
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,10 +47,13 @@ public class LoginActivity extends BaseActivity {
         finish();
     }
 
+    // ========================================================================
+    // methods
+    // ========================================================================
     private void attachFragment() {
         LoginFragment fragment = LoginFragment.newInstnace();
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.container, fragment, "fragment");
+        ft.replace(R.id.content_main, fragment, "fragment");
         ft.commit();
     }
 

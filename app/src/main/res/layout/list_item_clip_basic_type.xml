@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?android:attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true"
+    android:gravity="center_vertical"
+    android:minHeight="@dimen/common_list_item_min_height"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/common_list_item_padding_top_down"
+    android:paddingEnd="@dimen/activity_horizontal_margin"
+    android:paddingStart="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/common_list_item_padding_top_down">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/date"
+            style="@style/ClipListItem_DateTime"/>
+
+        <TextView
+            android:id="@+id/time"
+            android:layout_gravity="end"
+            style="@style/ClipListItem_DateTime"/>
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical">
+
+        <ImageView
+            android:id="@+id/btn_favourites"
+            android:layout_width="@dimen/list_item_favorite"
+            android:layout_height="@dimen/list_item_favorite"/>
+
+        <TextView
+            android:id="@+id/text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_weight="1"
+            android:textAppearance="@style/sans_serif_15_regular"/>
+
+        <ImageView
+            android:id="@+id/copy_item"
+            android:layout_width="@dimen/list_item_copy_image_size"
+            android:layout_height="@dimen/list_item_copy_image_size"
+            android:src="@drawable/ic_copy_normal_with_alpha"/>
+    </LinearLayout>
+</LinearLayout>
