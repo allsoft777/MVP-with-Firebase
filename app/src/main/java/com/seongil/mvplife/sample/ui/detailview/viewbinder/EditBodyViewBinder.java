@@ -1,11 +1,14 @@
 package com.seongil.mvplife.sample.ui.detailview.viewbinder;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import com.seongil.mvplife.sample.R;
+import com.seongil.mvplife.sample.application.MainApplication;
 import com.seongil.mvplife.sample.domain.ClipDomain;
 import com.seongil.mvplife.sample.repository.common.RepoTableContracts;
 import com.seongil.mvplife.sample.viewmodel.ClipDomainViewModel;
@@ -45,12 +48,20 @@ public class EditBodyViewBinder extends RxMvpViewBinder {
     public void initializeLayout(@NonNull View layout) {
         super.initializeLayout(layout);
         mEditText = (EditText) layout.findViewById(R.id.edit_text);
+        mEditText.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                toggleSoftInput();
+            } else {
+                hideSoftInput();
+            }
+        });
+        renderReadOnlyMode();
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        mEditText = null;
+        hideSoftInput();
     }
 
     // ========================================================================
@@ -106,16 +117,31 @@ public class EditBodyViewBinder extends RxMvpViewBinder {
 
     public void renderEditMode() {
         mEditText.setFocusable(true);
+        mEditText.setFocusableInTouchMode(true);
         mEditText.requestFocus();
     }
 
     public void renderReadOnlyMode() {
         mEditText.setFocusable(false);
+        mEditText.setFocusableInTouchMode(false);
         mEditText.clearFocus();
+        hideSoftInput();
     }
 
     public boolean existModifiedData() {
         return !mViewModel.getDomain().getTextData().equals(mEditText.getText().toString());
+    }
+
+    public void hideSoftInput() {
+        InputMethodManager imm =
+              (InputMethodManager) MainApplication.getAppContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(mEditText.getWindowToken(), 0);
+    }
+
+    private void toggleSoftInput() {
+        InputMethodManager imm =
+              (InputMethodManager) MainApplication.getAppContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
     }
 
     // ========================================================================

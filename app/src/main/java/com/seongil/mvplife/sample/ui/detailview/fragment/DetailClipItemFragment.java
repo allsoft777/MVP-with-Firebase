@@ -99,6 +99,12 @@ public class DetailClipItemFragment
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        mEditBodyViewBinder.hideSoftInput();
+    }
+
+    @Override
     public void renderClipDomain(@NonNull ClipDomain domain) {
         dismissProgressDialog();
         mEditBodyViewBinder.renderClipItemDomain(domain);

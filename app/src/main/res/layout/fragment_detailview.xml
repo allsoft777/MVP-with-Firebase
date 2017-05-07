@@ -11,12 +11,14 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingTop="@dimen/activity_vertical_margin">
 
         <EditText
             android:id="@+id/edit_text"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:inputType="textMultiLine"/>
 
     </LinearLayout>
 
@@ -31,33 +33,33 @@
 
         <Button
             android:id="@+id/btn_close"
-            android:background="@drawable/selector_ic_back"
-            style="@style/DetailView_SoftButton"/>
+            style="@style/DetailView_SoftButton"
+            android:background="@drawable/selector_ic_back"/>
 
         <Button
             android:id="@+id/btn_toggle_edit"
-            android:background="@drawable/selector_ic_read_only"
-            style="@style/DetailView_SoftButton"/>
+            style="@style/DetailView_SoftButton"
+            android:background="@drawable/selector_ic_read_only"/>
 
         <Button
             android:id="@+id/btn_favourites"
-            android:background="@drawable/selector_ic_favorite_false"
-            style="@style/DetailView_SoftButton"/>
+            style="@style/DetailView_SoftButton"
+            android:background="@drawable/selector_ic_favorite_false"/>
 
         <Button
             android:id="@+id/btn_share"
-            android:background="@drawable/selector_ic_share"
-            style="@style/DetailView_SoftButton"/>
+            style="@style/DetailView_SoftButton"
+            android:background="@drawable/selector_ic_share"/>
 
         <Button
             android:id="@+id/btn_copy"
-            android:background="@drawable/selector_ic_copy"
-            style="@style/DetailView_SoftButton"/>
+            style="@style/DetailView_SoftButton"
+            android:background="@drawable/selector_ic_copy"/>
 
         <Button
             android:id="@+id/btn_delete"
-            android:background="@drawable/selector_ic_delete"
-            style="@style/DetailView_SoftButton"/>
+            style="@style/DetailView_SoftButton"
+            android:background="@drawable/selector_ic_delete"/>
 
     </LinearLayout>
 

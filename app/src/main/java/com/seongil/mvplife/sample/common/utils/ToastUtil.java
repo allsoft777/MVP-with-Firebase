@@ -34,7 +34,7 @@ public class ToastUtil {
     // methods
     // ========================================================================
     public static void showToast(String msg) {
-        showToast(msg, Toast.LENGTH_LONG);
+        showToast(msg, Toast.LENGTH_SHORT);
     }
 
     public static void showToast(String msg, int duration) {
