@@ -13,11 +13,11 @@ public interface DetailClipItemView extends MvpView {
 
     void renderClipDomain(@NonNull ClipDomain domain);
 
-    void notifyRemovedItem();
+    void notifyRemovedItem(@NonNull String itemKey);
 
     void notifyUpdatedFavoriteState(boolean isFavouritesItem);
 
-    void notifyUpdatedClipItem();
+    void notifyUpdatedClipItem(@NonNull final ClipDomain domain);
 
     void renderError(@NonNull Throwable t);
 
@@ -27,5 +27,5 @@ public interface DetailClipItemView extends MvpView {
 
     void onBackPressed();
 
-    void notifyInsertionSuccess();
+    void notifyInsertionSuccess(@NonNull ClipDomain domain);
 }

@@ -88,13 +88,13 @@ public class EditSoftButtonsViewBinder implements MvpViewBinder {
 
     private void toggleEditModel() {
         if (mIsEditMode) {
-            mEditModeBtn.setBackgroundResource(R.drawable.selector_ic_read_only);
+            mEditModeBtn.setBackgroundResource(R.drawable.selector_ic_edit);
             mFragmentListener.setReadOnlyMode();
             mIsEditMode = false;
             return;
         }
 
-        mEditModeBtn.setBackgroundResource(R.drawable.selector_ic_edit);
+        mEditModeBtn.setBackgroundResource(R.drawable.selector_ic_read_only);
         mFragmentListener.setEditMode();
         mIsEditMode = true;
     }

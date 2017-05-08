@@ -27,6 +27,7 @@ public class InputContainerViewBinder implements MvpViewBinder {
     // ========================================================================
     // fields
     // ========================================================================
+    private View mContainerView;
 
     // ========================================================================
     // constructors
@@ -41,6 +42,7 @@ public class InputContainerViewBinder implements MvpViewBinder {
     // ========================================================================
     @Override
     public void initializeLayout(@NonNull View layout) {
+        mContainerView = layout.findViewById(R.id.input_container);
         RxView.clicks(layout.findViewById(R.id.make_notes))
               .throttleFirst(1, TimeUnit.SECONDS, AndroidSchedulers.mainThread())
               .subscribe(___ -> launchEditView());
@@ -58,6 +60,17 @@ public class InputContainerViewBinder implements MvpViewBinder {
         Intent intent = new Intent(MainApplication.getAppContext(), DetailClipItemActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         MainApplication.getAppContext().startActivity(intent);
+    }
+
+    public void hideContainer() {
+        mContainerView.setVisibility(View.GONE);
+    }
+
+    public void showContainer() {
+        if (mContainerView.getVisibility() == View.VISIBLE) {
+            return;
+        }
+        mContainerView.setVisibility(View.VISIBLE);
     }
 
     // ========================================================================

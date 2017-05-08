@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 import android.view.View;
 
 import com.seongil.mvplife.sample.R;
-import com.seongil.mvplife.sample.common.utils.ToastUtil;
 import com.seongil.mvplife.sample.domain.ClipDomain;
 import com.seongil.mvplife.sample.ui.base.BaseFragment;
 import com.seongil.mvplife.sample.ui.cliplist.fragment.viewbinder.ClipListFragmentViewBinderListener;
@@ -25,6 +24,7 @@ public class ClipListFragment extends BaseFragment<ClipListView, ClipListPresent
     // ========================================================================
     // constants
     // ========================================================================
+    public static final int LOAD_CLIP_ITEM_PER_CYCLE = 20;
 
     // ========================================================================
     // fields
@@ -73,9 +73,9 @@ public class ClipListFragment extends BaseFragment<ClipListView, ClipListPresent
         mInputContainerViewBinder.initializeLayout(view.findViewById(R.id.input_container));
 
         mClipListViewBinder.renderLoadingView();
+        mInputContainerViewBinder.hideContainer();
 
-        getPresenter().monitorSingleValueEvent();
-        getPresenter().monitorChildEvents();
+        getPresenter().fetchClipListFromRepository("");
     }
 
     @Override
@@ -92,51 +92,39 @@ public class ClipListFragment extends BaseFragment<ClipListView, ClipListPresent
     }
 
     @Override
-    public void notifyInsertionSuccess() {
-        renderToastMsg(getString(R.string.msg_added_new_item));
-    }
-
-    @Override
     public void renderError(@NonNull Throwable t) {
-        ToastUtil.showToast(t.toString());
+        renderToastMsg(t.toString());
     }
 
     @Override
-    public void addNewClipData(@NonNull ClipDomain viewModel) {
-        mClipListViewBinder.insertViewModel(viewModel);
-    }
-
-    @Override
-    public void updateClipData(@NonNull ClipDomain domain) {
-        mClipListViewBinder.updateViewModel(domain);
-    }
-
-    @Override
-    public void renderClipDataList(@NonNull List<ClipDomain> list) {
-        mClipListViewBinder.renderListItems(list);
-    }
-
-    @Override
-    public void removeClipData(@NonNull String itemKey) {
-        mClipListViewBinder.removeViewModel(itemKey);
+    public void renderClipDataList(@NonNull List<ClipDomain> list, final boolean existNextItemMore) {
+        mClipListViewBinder.insertCollectionToLastPosition(list, existNextItemMore);
+        mInputContainerViewBinder.showContainer();
     }
 
     @Override
     public void renderEmptyView() {
         mClipListViewBinder.renderEmptyView();
+        mInputContainerViewBinder.showContainer();
     }
 
     @Override
-    public void notifyUpdatedFavouritesItem(boolean isFavouritesItem) {
+    public void notifyUpdatedFavouritesItem(@NonNull String itemKey, final boolean isFavouritesItem) {
         if (isFavouritesItem) {
             renderToastMsg(getString(R.string.msg_success_to_add_favourites_item));
         } else {
             renderToastMsg(getString(R.string.msg_success_to_remove_favourites_item));
         }
+        mClipListViewBinder.renderFavouritesState(itemKey, isFavouritesItem);
     }
 
     @Override
-    public void updateFavouritesItemToRepository(@NonNull String itemKey, boolean isFavouritesItem) {
+    public void fetchNextItemMoreFromRepository(@NonNull String lastLoadedItemKey) {
+        getPresenter().fetchClipListFromRepository(lastLoadedItemKey);
+    }
+
+    @Override
+    public void updateFavouritesItemToRepository(@NonNull String itemKey, final boolean isFavouritesItem) {
         getPresenter().updateFavouritesItemToRepository(itemKey, isFavouritesItem);
     }
 

@@ -74,17 +74,14 @@ public class DetailClipItemPresenter extends RxMvpPresenter<DetailClipItemView> 
               SummaryTableRef.getInstance().deleteClipItem(itemKey).subscribeOn(Schedulers.io()),
               DetailTableRef.getInstance().deleteClipItem(itemKey).subscribeOn(Schedulers.io()),
               (result1, result2) -> result1 && result2)
-              .observeOn(AndroidSchedulers.mainThread()).subscribe(
-                    result -> getView().notifyRemovedItem(),
-                    t -> getView().renderError(t)
-              );
+              .observeOn(AndroidSchedulers.mainThread())
+              .subscribe(result -> getView().notifyRemovedItem(itemKey), t -> getView().renderError(t));
         addDisposable(disposable);
     }
 
     public void fetchClipDataFromRepository(@NonNull Resources res, @NonNull String itemKey) {
-        getView().showProgressDialog(res.getString(R.string.msg_loading));
         Disposable disposable = DetailTableRef.getInstance().getDetailPostItemDatabaseRef(itemKey)
-              .flatMap(ref -> addChildEventListener(ref))
+              .flatMap(this::addListenerForSingleValueEvent)
               .compose(RxTransformer.asyncObservableStream())
               .subscribe();
         addDisposable(disposable);
@@ -96,7 +93,7 @@ public class DetailClipItemPresenter extends RxMvpPresenter<DetailClipItemView> 
               .flatMap(user -> SummaryTableRef.getInstance().insertNewItemToRepository(domain))
               .flatMap(summaryRefKey -> DetailTableRef.getInstance().insertNewItemToRepository(summaryRefKey, domain))
               .compose(RxTransformer.asyncObservableStream())
-              .subscribe(result -> getView().notifyInsertionSuccess(), t -> getView().renderError(t));
+              .subscribe(result -> getView().notifyInsertionSuccess(result), t -> getView().renderError(t));
     }
 
     public void updateClipDataToRepository(@NonNull Resources res, @NonNull ClipDomain domain) {
@@ -104,11 +101,9 @@ public class DetailClipItemPresenter extends RxMvpPresenter<DetailClipItemView> 
         Disposable disposable = Observable.zip(
               SummaryTableRef.getInstance().updateClipItemToRepository(domain).subscribeOn(Schedulers.io()),
               DetailTableRef.getInstance().updateClipItemToRepository(domain).subscribeOn(Schedulers.io()),
-              (result1, result2) -> result1 && result2)
-              .observeOn(AndroidSchedulers.mainThread()).subscribe(
-                    result -> getView().notifyUpdatedClipItem(),
-                    t -> getView().renderError(t)
-              );
+              (result1, result2) -> result2)
+              .observeOn(AndroidSchedulers.mainThread())
+              .subscribe(result -> getView().notifyUpdatedClipItem(result), t -> getView().renderError(t));
         addDisposable(disposable);
     }
 
@@ -133,8 +128,9 @@ public class DetailClipItemPresenter extends RxMvpPresenter<DetailClipItemView> 
         MainApplication.getAppContext().startActivity(sendIntent);
     }
 
-    private Observable<Boolean> addChildEventListener(@NonNull Query ref) {
+    private Observable<Boolean> addListenerForSingleValueEvent(@NonNull Query ref) {
         return Observable.create(e -> ref.addListenerForSingleValueEvent(new ValueEventListener() {
+
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (!isViewAttached()) {

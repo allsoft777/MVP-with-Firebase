@@ -15,5 +15,7 @@ public interface ClipListFragmentViewBinderListener {
     // ========================================================================
     // methods
     // ========================================================================
+    void fetchNextItemMoreFromRepository(@NonNull String lastLoadedItemKey);
+
     void updateFavouritesItemToRepository(@NonNull String itemKey, boolean isFavouritesItem);
 }

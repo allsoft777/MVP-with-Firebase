@@ -3,6 +3,7 @@ package com.seongil.mvplife.sample.common.utils;
 import android.content.Context;
 import android.text.ClipboardManager;
 
+import com.seongil.mvplife.sample.R;
 import com.seongil.mvplife.sample.application.MainApplication;
 import com.seongil.mvplife.sample.common.firebase.reporter.CrashReporter;
 
@@ -10,7 +11,7 @@ import com.seongil.mvplife.sample.common.firebase.reporter.CrashReporter;
  * @author seong-il, kim
  * @since 17. 5. 7
  */
-public class ClipboadManager {
+public class ClipboardManagerUtil {
 
     // ========================================================================
     // constants
@@ -53,6 +54,7 @@ public class ClipboadManager {
             }
             clipboard.setPrimaryClip(clip);
         }
+        ToastUtil.showToast(MainApplication.getAppContext().getString(R.string.msg_copy_to_clipboard));
     }
 
     // ========================================================================

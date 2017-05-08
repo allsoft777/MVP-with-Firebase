@@ -20,19 +20,11 @@ public interface ClipListView extends MvpView {
     // ========================================================================
     // methods
     // ========================================================================
-    void addNewClipData(@NonNull ClipDomain domain);
-
-    void updateClipData(@NonNull ClipDomain domain);
-
-    void renderClipDataList(@NonNull List<ClipDomain> list);
-
-    void removeClipData(@NonNull String itemKey);
-
-    void notifyInsertionSuccess();
+    void renderClipDataList(@NonNull List<ClipDomain> list, final boolean existNextItemMore);
 
     void renderError(@NonNull Throwable t);
 
     void renderEmptyView();
 
-    void notifyUpdatedFavouritesItem(boolean isFavouritesItem);
+    void notifyUpdatedFavouritesItem(@NonNull String itemKey, final boolean isFavouritesItem);
 }

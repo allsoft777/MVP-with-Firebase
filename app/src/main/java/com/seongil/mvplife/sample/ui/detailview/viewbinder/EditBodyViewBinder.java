@@ -6,9 +6,11 @@ import android.text.TextUtils;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 
 import com.seongil.mvplife.sample.R;
 import com.seongil.mvplife.sample.application.MainApplication;
+import com.seongil.mvplife.sample.common.utils.ToastUtil;
 import com.seongil.mvplife.sample.domain.ClipDomain;
 import com.seongil.mvplife.sample.repository.common.RepoTableContracts;
 import com.seongil.mvplife.sample.viewmodel.ClipDomainViewModel;
@@ -28,6 +30,7 @@ public class EditBodyViewBinder extends RxMvpViewBinder {
     // fields
     // ========================================================================
     private EditText mEditText;
+    private ProgressBar mLoadingView;
     private ClipDomainViewModel mViewModel;
 
     // ========================================================================
@@ -47,6 +50,7 @@ public class EditBodyViewBinder extends RxMvpViewBinder {
     @Override
     public void initializeLayout(@NonNull View layout) {
         super.initializeLayout(layout);
+        mLoadingView = (ProgressBar) layout.findViewById(R.id.loading_bar);
         mEditText = (EditText) layout.findViewById(R.id.edit_text);
         mEditText.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
@@ -55,7 +59,6 @@ public class EditBodyViewBinder extends RxMvpViewBinder {
                 hideSoftInput();
             }
         });
-        renderReadOnlyMode();
     }
 
     @Override
@@ -106,6 +109,7 @@ public class EditBodyViewBinder extends RxMvpViewBinder {
     }
 
     public void renderClipItemDomain(@NonNull ClipDomain domain) {
+        renderEditView();
         mViewModel = new ClipDomainViewModel(domain);
         mEditText.setText(mViewModel.getDomain().getTextData());
         renderReadOnlyMode();
@@ -116,6 +120,7 @@ public class EditBodyViewBinder extends RxMvpViewBinder {
     }
 
     public void renderEditMode() {
+        ToastUtil.showToast(mLoadingView.getResources().getString(R.string.editing_mode));
         mEditText.setEnabled(true);
         mEditText.setFocusable(true);
         mEditText.setFocusableInTouchMode(true);
@@ -123,10 +128,21 @@ public class EditBodyViewBinder extends RxMvpViewBinder {
     }
 
     public void renderReadOnlyMode() {
+        ToastUtil.showToast(mLoadingView.getResources().getString(R.string.reading_mode));
         mEditText.setEnabled(false);
         mEditText.setFocusable(false);
         mEditText.setFocusableInTouchMode(false);
         hideSoftInput();
+    }
+
+    public void renderLoadingView() {
+        mLoadingView.setVisibility(View.VISIBLE);
+        mEditText.setVisibility(View.GONE);
+    }
+
+    private void renderEditView() {
+        mLoadingView.setVisibility(View.GONE);
+        mEditText.setVisibility(View.VISIBLE);
     }
 
     public boolean existModifiedData() {

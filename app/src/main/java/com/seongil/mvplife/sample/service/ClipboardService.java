@@ -14,6 +14,8 @@ import com.seongil.mvplife.sample.repository.common.RepoTableContracts;
 import com.seongil.mvplife.sample.repository.detailpost.DetailTableRef;
 import com.seongil.mvplife.sample.repository.summarypost.SummaryTableRef;
 import com.seongil.mvplife.sample.repository.user.RxFirebaseUser;
+import com.seongil.mvplife.sample.ui.cliplist.skyrail.ClipListViewSkyRail;
+import com.seongil.mvplife.sample.ui.cliplist.skyrail.SkyRailClipListEvent;
 
 import io.reactivex.Observable;
 import io.reactivex.schedulers.Schedulers;
@@ -105,11 +107,12 @@ public class ClipboardService extends Service {
         insertNewClipItemToRepository(domain);
     }
 
-    public void insertNewClipItemToRepository(ClipDomain domain) {
+    public void insertNewClipItemToRepository(@NonNull ClipDomain domain) {
         RxFirebaseUser.getInstance().getCurrentUser()
               .flatMap(user -> SummaryTableRef.getInstance().insertNewItemToRepository(domain))
               .flatMap(summaryRefKey -> DetailTableRef.getInstance().insertNewItemToRepository(summaryRefKey, domain))
-              .subscribe();
+              .subscribe(result -> ClipListViewSkyRail.getInstance().getSkyRail()
+                    .send(new SkyRailClipListEvent.InsertedNewItem(result)));
     }
 
     // ========================================================================

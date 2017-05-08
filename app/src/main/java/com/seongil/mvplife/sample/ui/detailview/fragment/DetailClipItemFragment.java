@@ -11,9 +11,12 @@ import android.view.View;
 
 import com.seongil.mvplife.sample.R;
 import com.seongil.mvplife.sample.common.ExtraKey;
+import com.seongil.mvplife.sample.common.utils.ClipboardManagerUtil;
 import com.seongil.mvplife.sample.common.utils.LogUtil;
 import com.seongil.mvplife.sample.domain.ClipDomain;
 import com.seongil.mvplife.sample.ui.base.BaseFragment;
+import com.seongil.mvplife.sample.ui.cliplist.skyrail.ClipListViewSkyRail;
+import com.seongil.mvplife.sample.ui.cliplist.skyrail.SkyRailClipListEvent;
 import com.seongil.mvplife.sample.ui.detailview.viewbinder.EditBodyViewBinder;
 import com.seongil.mvplife.sample.ui.detailview.viewbinder.EditClipItemFragmentViewBinderListener;
 import com.seongil.mvplife.sample.ui.detailview.viewbinder.EditSoftButtonsViewBinder;
@@ -86,6 +89,7 @@ public class DetailClipItemFragment
         if (TextUtils.isEmpty(clipItemKey)) {
             mEditBodyViewBinder.renderEditMode();
         } else {
+            mEditBodyViewBinder.renderLoadingView();
             getPresenter().fetchClipDataFromRepository(getResources(), clipItemKey);
         }
     }
@@ -106,7 +110,6 @@ public class DetailClipItemFragment
 
     @Override
     public void renderClipDomain(@NonNull ClipDomain domain) {
-        dismissProgressDialog();
         mEditBodyViewBinder.renderClipItemDomain(domain);
         mSoftButtonsViewBinder.renderFavouritesItemState(domain.isFavouritesItem());
     }
@@ -117,8 +120,8 @@ public class DetailClipItemFragment
     }
 
     @Override
-    public void notifyRemovedItem() {
-        dismissProgressDialog();
+    public void notifyRemovedItem(@NonNull String itemKey) {
+        ClipListViewSkyRail.getInstance().getSkyRail().send(new SkyRailClipListEvent.DeletedItem(itemKey));
         renderToastMsg(getString(R.string.msg_remove_successfully));
         getActivity().finish();
     }
@@ -165,11 +168,12 @@ public class DetailClipItemFragment
 
     @Override
     public void copyClipItem() {
-        //if (!mEditBodyViewBinder.isNewItemInsertionMode()) {
-        //    getPresenter().deleteClipItem(getResources(), mEditBodyViewBinder.getItemKey());
-        //}
-        //getPresenter().insertNewItemToRepository(getResources(),
-        //      mEditBodyViewBinder.buildDomainForInsertionToRepository());
+        if (!mEditBodyViewBinder.isNewItemInsertionMode()) {
+            ClipListViewSkyRail.getInstance().getSkyRail().send(
+                  new SkyRailClipListEvent.DeletedItem(mEditBodyViewBinder.getItemKey()));
+        }
+        ClipboardManagerUtil.copyText(mEditBodyViewBinder.getDomainWithInputData().getTextData());
+        finishActivity(true);
     }
 
     @Override
@@ -191,12 +195,18 @@ public class DetailClipItemFragment
         } else {
             renderToastMsg(getString(R.string.msg_success_to_remove_favourites_item));
         }
+
+        if (!mEditBodyViewBinder.isNewItemInsertionMode()) {
+            ClipListViewSkyRail.getInstance().getSkyRail().send(
+                  new SkyRailClipListEvent.UpdateFavouritesState(mEditBodyViewBinder.getItemKey(), isFavouritesItem));
+        }
         mEditBodyViewBinder.updateFavouritesState(isFavouritesItem);
         mSoftButtonsViewBinder.renderFavouritesItemState(isFavouritesItem);
     }
 
     @Override
-    public void notifyUpdatedClipItem() {
+    public void notifyUpdatedClipItem(@NonNull final ClipDomain domain) {
+        ClipListViewSkyRail.getInstance().getSkyRail().send(new SkyRailClipListEvent.UpdatedItem(domain));
         renderToastMsg(getString(R.string.msg_success_to_update_clip_item));
         finishActivity(true);
     }
@@ -207,12 +217,10 @@ public class DetailClipItemFragment
             getActivity().finish();
             return;
         }
-
         if (mEditBodyViewBinder.isNewItemInsertionMode()) {
             handleExitWithNewItemInsertionMode();
             return;
         }
-
         handleExitWithEditItemMode();
     }
 
@@ -222,8 +230,8 @@ public class DetailClipItemFragment
     }
 
     @Override
-    public void notifyInsertionSuccess() {
-        dismissProgressDialog();
+    public void notifyInsertionSuccess(@NonNull ClipDomain domain) {
+        ClipListViewSkyRail.getInstance().getSkyRail().send(new SkyRailClipListEvent.InsertedNewItem(domain));
         finishActivity(true);
     }
 
@@ -266,6 +274,7 @@ public class DetailClipItemFragment
 
     private void createProgressDialog() {
         mProgressDialog = new ProgressDialog(getActivity());
+        mProgressDialog.setCanceledOnTouchOutside(false);
         mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
     }
 

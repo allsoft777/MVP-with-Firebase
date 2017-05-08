@@ -1,25 +1,33 @@
-package com.seongil.mvplife.sample.ui.cliplist.adapter;
+/*
+ * Copyright (C) 2017 Seongil Kim <kims172@gmail.com>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-import android.support.annotation.NonNull;
-import android.view.LayoutInflater;
+package com.seongil.mvplife.sample.ui.cliplist.adapter.footer;
 
-import com.seongil.mvplife.sample.ui.cliplist.adapter.footer.ClipListFooterItem;
-import com.seongil.mvplife.sample.viewmodel.ClipDomainViewModel;
 import com.seongil.recyclerviewlife.model.RecyclerViewFooterItem;
 import com.seongil.recyclerviewlife.model.common.ViewStatus;
-import com.seongil.recyclerviewlife.single.RecyclerListViewAdapter;
-import com.seongil.recyclerviewlife.single.viewbinder.AbstractFooterViewBinder;
 
 /**
  * @author seong-il, kim
- * @since 17. 4. 26
+ * @since 17. 4. 7
  */
-public class ClipListAdapter extends RecyclerListViewAdapter<ClipDomainViewModel> {
+public class ClipListFooterItem extends RecyclerViewFooterItem {
 
     // ========================================================================
     // constants
     // ========================================================================
-    private static final int VIEW_TYPE_DEFAULT = 1;
 
     // ========================================================================
     // fields
@@ -28,9 +36,12 @@ public class ClipListAdapter extends RecyclerListViewAdapter<ClipDomainViewModel
     // ========================================================================
     // constructors
     // ========================================================================
-    public ClipListAdapter(@NonNull LayoutInflater layoutInflater) {
-        super(layoutInflater);
-        addViewBinder(new ClipItemBasicViewBinder(VIEW_TYPE_DEFAULT, layoutInflater));
+    public ClipListFooterItem() {
+        super(ViewStatus.VISIBLE_LOADING_VIEW);
+    }
+
+    public ClipListFooterItem(ViewStatus requestCode) {
+        super(requestCode);
     }
 
     // ========================================================================
@@ -40,16 +51,6 @@ public class ClipListAdapter extends RecyclerListViewAdapter<ClipDomainViewModel
     // ========================================================================
     // methods for/from superclass/interfaces
     // ========================================================================
-
-    @Override
-    protected AbstractFooterViewBinder getNewInstanceOfFooterViewBinder() {
-        return new LoadItemViewBinder(mLayoutInflater);
-    }
-
-    @Override
-    protected RecyclerViewFooterItem getNewInstanceOfFooterItem() {
-        return new ClipListFooterItem(ViewStatus.VISIBLE_LOADING_VIEW);
-    }
 
     // ========================================================================
     // methods

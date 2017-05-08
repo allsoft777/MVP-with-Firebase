@@ -4,17 +4,19 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
-    android:orientation="vertical"
-    android:paddingEnd="@dimen/activity_horizontal_margin"
-    android:paddingStart="@dimen/activity_horizontal_margin">
+    android:orientation="vertical">
 
-    <LinearLayout
+    <FrameLayout
         android:id="@+id/content_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:orientation="vertical"
+        android:paddingEnd="@dimen/activity_horizontal_margin"
+        android:paddingStart="@dimen/activity_horizontal_margin"
         android:paddingTop="@dimen/activity_vertical_margin">
+
+        <include layout="@layout/merge_common_loading_view"/>
 
         <EditText
             android:id="@+id/edit_text"
@@ -24,7 +26,7 @@
             android:textColor="@color/grey_900"
             android:textSize="15dp"/>
 
-    </LinearLayout>
+    </FrameLayout>
 
     <LinearLayout
         android:id="@+id/soft_menu_container"
@@ -43,7 +45,7 @@
         <Button
             android:id="@+id/btn_toggle_edit"
             style="@style/DetailView_SoftButton"
-            android:background="@drawable/selector_ic_read_only"/>
+            android:background="@drawable/selector_ic_edit"/>
 
         <Button
             android:id="@+id/btn_favourites"
