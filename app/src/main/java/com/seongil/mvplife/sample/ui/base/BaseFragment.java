@@ -9,7 +9,6 @@ import com.seongil.mvplife.sample.common.utils.ToastUtil;
  * @author seong-il, kim
  * @since 17. 3. 20
  */
-@SuppressWarnings("unused")
 public abstract class BaseFragment<V extends MvpView, P extends MvpPresenter<V>>
       extends BaseMvpFragmentV4<V, P> {
 

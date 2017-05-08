@@ -59,8 +59,8 @@ public class ClipListViewBinder extends RxMvpViewBinder {
     // ========================================================================
     // constructors
     // ========================================================================
-    public ClipListViewBinder(@NonNull LayoutInflater layoutInflater, @NonNull
-          ClipListFragmentViewBinderListener fragmentViewBinderListener) {
+    public ClipListViewBinder(@NonNull LayoutInflater layoutInflater,
+                              @NonNull ClipListFragmentViewBinderListener fragmentViewBinderListener) {
         mLayoutInflater = layoutInflater;
         mFragmentListener = fragmentViewBinderListener;
         mViewModelList = new ArrayList<>();

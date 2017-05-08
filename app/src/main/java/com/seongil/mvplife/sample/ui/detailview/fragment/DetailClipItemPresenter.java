@@ -84,7 +84,7 @@ public class DetailClipItemPresenter extends RxMvpPresenter<DetailClipItemView> 
     public void fetchClipDataFromRepository(@NonNull Resources res, @NonNull String itemKey) {
         getView().showProgressDialog(res.getString(R.string.msg_loading));
         Disposable disposable = DetailTableRef.getInstance().getDetailPostItemDatabaseRef(itemKey)
-              .flatMap(ref -> addChildEventListener(ref, itemKey))
+              .flatMap(ref -> addChildEventListener(ref))
               .compose(RxTransformer.asyncObservableStream())
               .subscribe();
         addDisposable(disposable);
@@ -112,13 +112,13 @@ public class DetailClipItemPresenter extends RxMvpPresenter<DetailClipItemView> 
         addDisposable(disposable);
     }
 
-    public void updateFavouritesStateToRepository(@NonNull String key, final boolean favoriteItem) {
+    public void updateFavouritesStateToRepository(@NonNull String key, final boolean favouritesItem) {
         Disposable disposable = Observable.zip(
-              SummaryTableRef.getInstance().updateFavouritesItemState(key, favoriteItem).subscribeOn(Schedulers.io()),
-              DetailTableRef.getInstance().updateFavouritesItemState(key, favoriteItem).subscribeOn(Schedulers.io()),
+              SummaryTableRef.getInstance().updateFavouritesItemState(key, favouritesItem).subscribeOn(Schedulers.io()),
+              DetailTableRef.getInstance().updateFavouritesItemState(key, favouritesItem).subscribeOn(Schedulers.io()),
               (result1, result2) -> result1 && result2)
               .observeOn(AndroidSchedulers.mainThread()).subscribe(
-                    result -> getView().notifyUpdatedFavoriteState(favoriteItem),
+                    result -> getView().notifyUpdatedFavoriteState(favouritesItem),
                     t -> getView().renderError(t)
               );
         addDisposable(disposable);
@@ -133,7 +133,7 @@ public class DetailClipItemPresenter extends RxMvpPresenter<DetailClipItemView> 
         MainApplication.getAppContext().startActivity(sendIntent);
     }
 
-    private Observable<Boolean> addChildEventListener(Query ref, String itemKey) {
+    private Observable<Boolean> addChildEventListener(@NonNull Query ref) {
         return Observable.create(e -> ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

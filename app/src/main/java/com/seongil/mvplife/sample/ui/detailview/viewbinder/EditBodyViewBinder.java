@@ -116,15 +116,16 @@ public class EditBodyViewBinder extends RxMvpViewBinder {
     }
 
     public void renderEditMode() {
+        mEditText.setEnabled(true);
         mEditText.setFocusable(true);
         mEditText.setFocusableInTouchMode(true);
         mEditText.requestFocus();
     }
 
     public void renderReadOnlyMode() {
+        mEditText.setEnabled(false);
         mEditText.setFocusable(false);
         mEditText.setFocusableInTouchMode(false);
-        mEditText.clearFocus();
         hideSoftInput();
     }
 

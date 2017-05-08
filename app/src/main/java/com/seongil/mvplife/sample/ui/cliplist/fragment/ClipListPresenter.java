@@ -52,23 +52,6 @@ public class ClipListPresenter extends RxMvpPresenter<ClipListView> {
     // ========================================================================
     // methods
     // ========================================================================
-    public void insertNewClipItemToRepository(ClipDomain domain) {
-        RxFirebaseUser.getInstance().getCurrentUser()
-              .flatMap(user -> SummaryTableRef.getInstance().insertNewItemToRepository(domain))
-              .flatMap(summaryRefKey -> DetailTableRef.getInstance().insertNewItemToRepository(summaryRefKey, domain))
-              .compose(RxTransformer.asyncObservableStream())
-              .subscribe(result -> getView().notifyInsertionSuccess(), t -> getView().renderError(t));
-    }
-
-    public void removeClipItemFromRepository(String itemKey) {
-        Disposable disposable = Observable.zip(
-              SummaryTableRef.getInstance().deleteClipItem(itemKey).subscribeOn(Schedulers.io()),
-              DetailTableRef.getInstance().deleteClipItem(itemKey).subscribeOn(Schedulers.io()),
-              (result1, result2) -> result1 && result2)
-              .observeOn(AndroidSchedulers.mainThread()).subscribe();
-        addDisposable(disposable);
-    }
-
     public void updateFavouritesItemToRepository(@NonNull String itemKey, boolean isFavouritesItem) {
         Disposable disposable = Observable.zip(
               SummaryTableRef.getInstance()
