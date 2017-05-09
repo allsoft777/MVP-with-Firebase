@@ -91,8 +91,10 @@ public class DetailClipItemFragment
         final String clipItemKey = retrieveClipItemKeyFromArgument(getArguments());
         if (TextUtils.isEmpty(clipItemKey)) {
             mEditBodyViewBinder.renderEditMode();
+            getActionBar().setTitle(getString(R.string.edit_view));
         } else {
             mEditBodyViewBinder.renderLoadingView();
+            getActionBar().setTitle(getString(R.string.detail_view));
             getPresenter().fetchClipDataFromRepository(getResources(), clipItemKey);
         }
     }
