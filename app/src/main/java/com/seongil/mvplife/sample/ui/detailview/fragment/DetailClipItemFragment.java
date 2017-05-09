@@ -10,7 +10,10 @@ import android.text.TextUtils;
 import android.view.View;
 
 import com.seongil.mvplife.sample.R;
+import com.seongil.mvplife.sample.application.MainApplication;
 import com.seongil.mvplife.sample.common.ExtraKey;
+import com.seongil.mvplife.sample.common.sharedprefs.DefaultSharedPrefWrapper;
+import com.seongil.mvplife.sample.common.sharedprefs.SharedPrefKeys;
 import com.seongil.mvplife.sample.common.utils.ClipboardManagerUtil;
 import com.seongil.mvplife.sample.common.utils.LogUtil;
 import com.seongil.mvplife.sample.domain.ClipDomain;
@@ -150,14 +153,15 @@ public class DetailClipItemFragment
 
     @Override
     public void toggleFavoriteItem() {
-        final boolean favoriteItem = mEditBodyViewBinder.isFavouritesItem();
+        final boolean isFavouritesItem = mEditBodyViewBinder.isFavouritesItem();
+        final boolean updatedState = !isFavouritesItem;
         if (mEditBodyViewBinder.isNewItemInsertionMode()) {
-            mEditBodyViewBinder.updateFavouritesState(!favoriteItem);
-            mSoftButtonsViewBinder.renderFavouritesItemState(!favoriteItem);
+            mEditBodyViewBinder.updateFavouritesState(updatedState);
+            mSoftButtonsViewBinder.renderFavouritesItemState(updatedState);
             return;
         }
         final String itemKey = mEditBodyViewBinder.getItemKey();
-        getPresenter().updateFavouritesStateToRepository(itemKey, !favoriteItem);
+        getPresenter().updateFavouritesStateToRepository(itemKey, updatedState);
     }
 
     @Override
@@ -202,6 +206,12 @@ public class DetailClipItemFragment
         }
         mEditBodyViewBinder.updateFavouritesState(isFavouritesItem);
         mSoftButtonsViewBinder.renderFavouritesItemState(isFavouritesItem);
+
+        final boolean isFavouritesFilterOn = DefaultSharedPrefWrapper.getInstance().getBoolean(
+              MainApplication.getAppContext(), SharedPrefKeys.KEY_CLIP_LIST_FAVOURITES_ITEM_SWITCH_ON);
+        if (isFavouritesFilterOn && !isFavouritesItem) {
+            getActivity().finish();
+        }
     }
 
     @Override

@@ -54,7 +54,7 @@ ext {
     guava = '20.0'
     leakCanary = '1.5'
     rxbinding = '2.0.0'
-    recyclerviewLife = '1.0.4'
+    recyclerviewLife = '1.0.5'
 
     // ========================================================================
     // Dependency Scopes

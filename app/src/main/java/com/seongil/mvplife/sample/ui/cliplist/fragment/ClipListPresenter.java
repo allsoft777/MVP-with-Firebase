@@ -7,10 +7,12 @@ import android.text.TextUtils;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.seongil.mvplife.base.RxMvpPresenter;
 import com.seongil.mvplife.sample.common.utils.RxTransformer;
 import com.seongil.mvplife.sample.domain.ClipDomain;
+import com.seongil.mvplife.sample.repository.common.RepoTableContracts;
 import com.seongil.mvplife.sample.repository.detailpost.DetailTableRef;
 import com.seongil.mvplife.sample.repository.summarypost.SummaryTableRef;
 import com.seongil.mvplife.sample.repository.user.RxFirebaseUser;
@@ -68,88 +70,92 @@ public class ClipListPresenter extends RxMvpPresenter<ClipListView> {
         addDisposable(disposable);
     }
 
-    public void fetchClipListFromRepository(@Nullable String lastLoadedItemKey) {
+    public void fetchClipListFromRepository(@Nullable String lastLoadedItemKey, final boolean filterFavouritesItem) {
         Disposable disposable = RxFirebaseUser.getInstance().getCurrentUser()
               .flatMap(user -> SummaryTableRef.getInstance().getSummaryPostsDatabaseRef(user))
-              .flatMap(ref -> fetchDataFromRepository(ref, lastLoadedItemKey))
+              .flatMap(ref -> fetchDataFromRepository(ref, lastLoadedItemKey, filterFavouritesItem))
               .compose(RxTransformer.asyncObservableStream())
               .subscribe();
         addDisposable(disposable);
     }
 
-    private Observable<Boolean> fetchDataFromRepository(DatabaseReference ref, @Nullable String lastLoadedItemKey) {
+    private Observable<Boolean> fetchDataFromRepository(
+          @NonNull DatabaseReference ref, @Nullable String lastLoadedItemKey, final boolean filterFavouritesItem) {
         if (TextUtils.isEmpty(lastLoadedItemKey)) {
-            return fetchDataForFirstTimeFromRepository(ref);
+            return fetchDataForFirstTimeFromRepository(ref, filterFavouritesItem);
         } else {
-            return fetchNextDataFromRepository(ref, lastLoadedItemKey);
+            return fetchNextDataFromRepository(ref, lastLoadedItemKey, filterFavouritesItem);
         }
     }
 
-    private Observable<Boolean> fetchDataForFirstTimeFromRepository(@NonNull DatabaseReference ref) {
-        return Observable.create(e -> ref
-              .orderByKey()
-              .limitToLast(LOAD_CLIP_ITEM_PER_CYCLE)
-              .addListenerForSingleValueEvent(new ValueEventListener() {
-                  @Override
-                  public void onDataChange(DataSnapshot dataSnapshot) {
-                      if (dataSnapshot.getValue() == null) {
-                          getView().renderEmptyView();
-                          return;
+    private Observable<Boolean> fetchDataForFirstTimeFromRepository(
+          @NonNull DatabaseReference ref, final boolean filterFavouritesItem) {
+        return Observable.create(e -> {
+                  Query query;
+                  if (filterFavouritesItem) {
+                      query = filterFavouritesItem(ref);
+                  } else {
+                      query = ref.orderByKey();
+                  }
+                  query = query.limitToLast(LOAD_CLIP_ITEM_PER_CYCLE);
+                  query.addListenerForSingleValueEvent(new ValueEventListener() {
+                      @Override
+                      public void onDataChange(DataSnapshot dataSnapshot) {
+                          if (dataSnapshot.getValue() == null) {
+                              getView().renderEmptyView();
+                              return;
+                          }
+                          handleReceivedDataSnapshot(dataSnapshot);
                       }
 
-                      ClipDomain element;
-                      List<ClipDomain> list = new ArrayList<>();
-                      for (DataSnapshot item : dataSnapshot.getChildren()) {
-                          element = item.getValue(ClipDomain.class);
-                          element.setKey(item.getKey());
-                          list.add(0, element);
+                      @Override
+                      public void onCancelled(DatabaseError databaseError) {
                       }
-                      getView().renderClipDataList(list, list.size() == LOAD_CLIP_ITEM_PER_CYCLE);
-                  }
-
-                  @Override
-                  public void onCancelled(DatabaseError databaseError) {
-
-                  }
-              })
+                  });
+              }
         );
     }
 
     private Observable<Boolean> fetchNextDataFromRepository(
-          @NonNull DatabaseReference ref,
-          @NonNull String lastLoadedItemKey) {
+          @NonNull DatabaseReference ref, @NonNull String lastLoadedItemKey, boolean filterFavouritesItem) {
+        return Observable.create(e -> {
+            Query query;
+            if (filterFavouritesItem) {
+                query = filterFavouritesItem(ref);
+            } else {
+                query = ref.orderByKey();
+            }
+            query = query.endAt(lastLoadedItemKey).limitToLast(LOAD_CLIP_ITEM_PER_CYCLE + 1);
+            query.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.getValue() == null) {
+                        getView().renderClipDataList(new ArrayList<>(), false);
+                        return;
+                    }
+                    handleReceivedDataSnapshot(dataSnapshot);
+                }
 
-        return Observable.create(e -> ref
-              .orderByKey()
-              .endAt(lastLoadedItemKey)
-              .limitToLast(LOAD_CLIP_ITEM_PER_CYCLE + 1)
-              .addListenerForSingleValueEvent(new ValueEventListener() {
-                  @Override
-                  public void onDataChange(DataSnapshot dataSnapshot) {
-                      if (dataSnapshot.getValue() == null) {
-                          getView().renderClipDataList(new ArrayList<>(), false);
-                          return;
-                      }
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                }
+            });
+        });
+    }
 
-                      ClipDomain element;
-                      List<ClipDomain> list = new ArrayList<>();
-                      for (DataSnapshot item : dataSnapshot.getChildren()) {
-                          if (item.getKey().equals(lastLoadedItemKey)) {
-                              continue;
-                          }
+    private void handleReceivedDataSnapshot(DataSnapshot dataSnapshot) {
+        ClipDomain element;
+        List<ClipDomain> list = new ArrayList<>();
+        for (DataSnapshot item : dataSnapshot.getChildren()) {
+            element = item.getValue(ClipDomain.class);
+            element.setKey(item.getKey());
+            list.add(0, element);
+        }
+        getView().renderClipDataList(list, list.size() == LOAD_CLIP_ITEM_PER_CYCLE);
+    }
 
-                          element = item.getValue(ClipDomain.class);
-                          element.setKey(item.getKey());
-                          list.add(0, element);
-                      }
-                      getView().renderClipDataList(list, list.size() == LOAD_CLIP_ITEM_PER_CYCLE);
-                  }
-
-                  @Override
-                  public void onCancelled(DatabaseError databaseError) {
-
-                  }
-              }));
+    private Query filterFavouritesItem(Query query) {
+        return query.orderByChild(RepoTableContracts.COL_FAVORITE_ITEM).equalTo(true);
     }
 
     // ========================================================================

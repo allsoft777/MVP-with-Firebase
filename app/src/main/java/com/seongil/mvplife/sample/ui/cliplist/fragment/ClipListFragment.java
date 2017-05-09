@@ -1,11 +1,18 @@
 package com.seongil.mvplife.sample.ui.cliplist.fragment;
 
 import android.os.Bundle;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.seongil.mvplife.sample.R;
+import com.seongil.mvplife.sample.application.MainApplication;
+import com.seongil.mvplife.sample.common.sharedprefs.DefaultSharedPrefWrapper;
+import com.seongil.mvplife.sample.common.sharedprefs.SharedPrefKeys;
 import com.seongil.mvplife.sample.domain.ClipDomain;
 import com.seongil.mvplife.sample.ui.base.BaseFragment;
 import com.seongil.mvplife.sample.ui.cliplist.fragment.viewbinder.ClipListFragmentViewBinderListener;
@@ -75,7 +82,7 @@ public class ClipListFragment extends BaseFragment<ClipListView, ClipListPresent
         mClipListViewBinder.renderLoadingView();
         mInputContainerViewBinder.hideContainer();
 
-        getPresenter().fetchClipListFromRepository("");
+        getPresenter().fetchClipListFromRepository("", isFavouritesItemFilterMode());
     }
 
     @Override
@@ -89,6 +96,30 @@ public class ClipListFragment extends BaseFragment<ClipListView, ClipListPresent
         super.onDestroyView();
         mClipListViewBinder.onDestroyView();
         mInputContainerViewBinder.onDestroyView();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_clip_list, menu);
+        final boolean favouritesSwitchOn = DefaultSharedPrefWrapper.getInstance().getBoolean(
+              MainApplication.getAppContext(), SharedPrefKeys.KEY_CLIP_LIST_FAVOURITES_ITEM_SWITCH_ON);
+        updateFavouritesState(menu.findItem(R.id.action_star), favouritesSwitchOn);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_search) {
+
+            return true;
+        } else if (item.getItemId() == R.id.action_star) {
+            final boolean favouritesItemFilterMode = !isFavouritesItemFilterMode();
+            updateFavouritesState(item, favouritesItemFilterMode);
+            mClipListViewBinder.renderLoadingView();
+            mClipListViewBinder.initializeListView();
+            getPresenter().fetchClipListFromRepository("", favouritesItemFilterMode);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -120,7 +151,7 @@ public class ClipListFragment extends BaseFragment<ClipListView, ClipListPresent
 
     @Override
     public void fetchNextItemMoreFromRepository(@NonNull String lastLoadedItemKey) {
-        getPresenter().fetchClipListFromRepository(lastLoadedItemKey);
+        getPresenter().fetchClipListFromRepository(lastLoadedItemKey, isFavouritesItemFilterMode());
     }
 
     @Override
@@ -128,9 +159,29 @@ public class ClipListFragment extends BaseFragment<ClipListView, ClipListPresent
         getPresenter().updateFavouritesItemToRepository(itemKey, isFavouritesItem);
     }
 
+    @Override
+    public boolean isFavouritesItemFilterMode() {
+        return DefaultSharedPrefWrapper.getInstance().getBoolean(
+              MainApplication.getAppContext(), SharedPrefKeys.KEY_CLIP_LIST_FAVOURITES_ITEM_SWITCH_ON);
+    }
+
     // ========================================================================
     // methods
     // ========================================================================
+    private void updateFavouritesState(MenuItem menuItem, boolean switchOn) {
+        if (menuItem == null) {
+            return;
+        }
+        @DrawableRes int iconRes;
+        if (switchOn) {
+            iconRes = R.drawable.ic_favorite_true_normal;
+        } else {
+            iconRes = R.drawable.ic_favorite_false_normal;
+        }
+        menuItem.setIcon(iconRes);
+        DefaultSharedPrefWrapper.getInstance().putBoolean(
+              MainApplication.getAppContext(), SharedPrefKeys.KEY_CLIP_LIST_FAVOURITES_ITEM_SWITCH_ON, switchOn);
+    }
 
     // ========================================================================
     // inner and anonymous classes

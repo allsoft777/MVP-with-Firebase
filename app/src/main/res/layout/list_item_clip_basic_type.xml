@@ -17,7 +17,9 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:paddingLeft="5dp"
+        android:paddingStart="5dp">
 
         <TextView
             android:id="@+id/date"
@@ -25,8 +27,8 @@
 
         <TextView
             android:id="@+id/time"
-            android:layout_gravity="end"
-            style="@style/ClipListItem_DateTime"/>
+            style="@style/ClipListItem_DateTime"
+            android:layout_gravity="end"/>
     </FrameLayout>
 
     <LinearLayout
@@ -43,6 +45,7 @@
             android:id="@+id/text"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
             android:layout_marginStart="10dp"
             android:layout_weight="1"
             android:textAppearance="@style/sans_serif_15_regular"/>

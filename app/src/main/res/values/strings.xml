@@ -8,6 +8,8 @@
     <string name="exit_confirm_dialog">Exit Confirmation</string>
     <string name="editing_mode">Editing mode.</string>
     <string name="reading_mode">Reading mode.</string>
+    <string name="search">Search</string>
+    <string name="favourites">Favourites</string>
 
     <string name="msg_hint_make_notes">Make notes…</string>
     <string name="msg_inserting">Inserting…</string>

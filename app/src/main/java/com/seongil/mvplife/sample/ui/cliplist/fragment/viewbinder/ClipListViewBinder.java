@@ -57,7 +57,6 @@ public class ClipListViewBinder extends RxMvpViewBinder {
     private ProgressBar mLoadingView;
     private View mEmptyContainer;
     private ClipListAdapter mAdapter;
-    private List<ClipDomainViewModel> mViewModelList;
     private boolean mExistNextItemMore = true;
 
     // ========================================================================
@@ -67,7 +66,6 @@ public class ClipListViewBinder extends RxMvpViewBinder {
                               @NonNull ClipListFragmentViewBinderListener fragmentViewBinderListener) {
         mLayoutInflater = layoutInflater;
         mFragmentListener = fragmentViewBinderListener;
-        mViewModelList = new ArrayList<>();
     }
 
     // ========================================================================
@@ -81,18 +79,7 @@ public class ClipListViewBinder extends RxMvpViewBinder {
     public void initializeLayout(@NonNull View layout) {
         super.initializeLayout(layout);
         mListView = (RecyclerView) layout.findViewById(R.id.recycler_view);
-        mAdapter = new ClipListAdapter(mLayoutInflater);
-        mAdapter.setData(mViewModelList);
-        mAdapter.useFooterView();
-
-        final LinearLayoutManager llm = new LinearLayoutManager(layout.getContext());
-        llm.setOrientation(LinearLayoutManager.VERTICAL);
-        mListView.setLayoutManager(llm);
-        mListView.setAdapter(mAdapter);
-        mListView.setHasFixedSize(true);
-        mListView.setFocusable(false);
-        addDividerDecorToListView();
-        addScrollListenerToListView(llm);
+        initializeListView();
 
         mLoadingView = (ProgressBar) layout.findViewById(R.id.loading_bar);
         mEmptyContainer = layout.findViewById(R.id.empty_container);
@@ -111,14 +98,30 @@ public class ClipListViewBinder extends RxMvpViewBinder {
         mLayoutInflater = null;
         mFragmentListener = null;
         mAdapter = null;
-        mViewModelList.clear();
-        mViewModelList = null;
         mListView = null;
     }
 
     // ========================================================================
     // methods
     // ========================================================================
+    public void initializeListView() {
+        if (mAdapter != null) {
+            mAdapter.notifyDataSetChanged();
+        }
+        mAdapter = new ClipListAdapter(mLayoutInflater);
+        mAdapter.setData(new ArrayList<>());
+        mAdapter.useFooterView();
+
+        final LinearLayoutManager llm = new LinearLayoutManager(mListView.getContext());
+        llm.setOrientation(LinearLayoutManager.VERTICAL);
+        mListView.setLayoutManager(llm);
+        mListView.setAdapter(mAdapter);
+        mListView.setHasFixedSize(true);
+        mListView.setFocusable(false);
+        addDividerDecorToListView();
+        addScrollListenerToListView(llm);
+    }
+
     private void addDividerDecorToListView() {
         RecyclerViewDividerItemDecor decor = new RecyclerViewDividerItemDecor(
               mListView.getContext(), RecyclerView.VERTICAL, R.drawable.common_recyclerview_list_item_divider);
@@ -266,13 +269,19 @@ public class ClipListViewBinder extends RxMvpViewBinder {
         if (mState != STATE_LIST_VIEW) {
             renderListView();
         }
+
+        List<ClipDomainViewModel> dataSet = new ArrayList<>();
         for (ClipDomain domain : list) {
-            mAdapter.addItemToLastPosition(new ClipDomainViewModel(domain));
-            mListView.scrollToPosition(mAdapter.getItemCount());
+            dataSet.add(new ClipDomainViewModel(domain));
         }
+        mAdapter.addCollectionToLastPosition(dataSet);
     }
 
     private void insertItemToFirstPosition(@NonNull ClipDomain domain) {
+        if (mState != STATE_LIST_VIEW && mState != STATE_MORE_ITEM_LOADING_VIEW) {
+            mExistNextItemMore = false;
+            mAdapter.updateFooterViewStatus(ViewStatus.VISIBLE_LABEL_VIEW, false);
+        }
         if (mState != STATE_LIST_VIEW) {
             renderListView();
         }
@@ -287,7 +296,7 @@ public class ClipListViewBinder extends RxMvpViewBinder {
         mAdapter.removePosition(pos, false);
         mAdapter.notifyItemRemoved(pos);
 
-        if (mAdapter.getItemCount() == 0) {
+        if (mAdapter.getItemCount() == 1) {
             renderEmptyView();
         }
     }
@@ -305,6 +314,11 @@ public class ClipListViewBinder extends RxMvpViewBinder {
         if (pos == INVALID_KEY_POSITION) {
             return;
         }
+        if (!isFavouritesItem && mFragmentListener.isFavouritesItemFilterMode()) {
+            removeItemFromListView(itemKey);
+            return;
+        }
+
         ClipDomain domain = mAdapter.getItem(pos).getDomain();
         domain.setFavouritesItem(isFavouritesItem);
         mAdapter.replaceItem(new ClipDomainViewModel(domain), pos);
