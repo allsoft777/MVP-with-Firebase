@@ -4,14 +4,14 @@
 
     <item
         android:id="@+id/action_search"
-        android:icon="@drawable/ic_search_normal"
+        android:icon="@drawable/ic_action_search"
         android:title="@string/search"
         app:actionViewClass="android.support.v7.widget.SearchView"
         app:showAsAction="collapseActionView|ifRoom|withText"/>
 
     <item
         android:id="@+id/action_star"
-        android:icon="@drawable/ic_favorite_false_normal"
+        android:icon="@drawable/ic_action_favourites_false"
         android:title="@string/favourites"
         app:showAsAction="always"/>
 

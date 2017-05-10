@@ -4,8 +4,6 @@ import android.os.Bundle;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -176,7 +174,6 @@ public class ClipListFragment extends BaseFragment<ClipListView, ClipListPresent
     @Override
     public void startContextActionBar() {
         mActionMode = getActivity().startActionMode(new ContextActionModeCallback());
-        setVisibilityOfToolBar(false);
     }
 
     @Override
@@ -188,27 +185,15 @@ public class ClipListFragment extends BaseFragment<ClipListView, ClipListPresent
     // ========================================================================
     // methods
     // ========================================================================
-    private void setVisibilityOfToolBar(boolean visible) {
-        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        if (actionBar == null) {
-            return;
-        }
-        if (visible) {
-            actionBar.show();
-        } else {
-            actionBar.hide();
-        }
-    }
-
     private void updateFavouritesState(MenuItem menuItem, boolean switchOn) {
         if (menuItem == null) {
             return;
         }
         @DrawableRes int iconRes;
         if (switchOn) {
-            iconRes = R.drawable.ic_favorite_true_normal;
+            iconRes = R.drawable.ic_action_favourites_true;
         } else {
-            iconRes = R.drawable.ic_favorite_false_normal;
+            iconRes = R.drawable.ic_action_favourites_false;
         }
         menuItem.setIcon(iconRes);
         DefaultSharedPrefWrapper.getInstance().putBoolean(
@@ -251,7 +236,6 @@ public class ClipListFragment extends BaseFragment<ClipListView, ClipListPresent
         public void onDestroyActionMode(android.view.ActionMode mode) {
             mClipListViewBinder.clearSelectionMode();
             mActionMode = null;
-            setVisibilityOfToolBar(true);
         }
     }
 }
