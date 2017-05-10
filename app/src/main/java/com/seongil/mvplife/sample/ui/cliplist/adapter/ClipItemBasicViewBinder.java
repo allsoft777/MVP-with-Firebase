@@ -6,6 +6,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -43,12 +44,14 @@ public class ClipItemBasicViewBinder extends AbstractViewBinder {
     // ========================================================================
     // fields
     // ========================================================================
+    private ClipListAdapterListener mAdapterListener;
 
     // ========================================================================
     // constructors
     // ========================================================================
-    public ClipItemBasicViewBinder(int viewType, @NonNull LayoutInflater inflater) {
+    public ClipItemBasicViewBinder(final int viewType, @NonNull LayoutInflater inflater, @NonNull ClipListAdapterListener adapterListener) {
         super(viewType, inflater);
+        mAdapterListener = adapterListener;
     }
 
     // ========================================================================
@@ -82,6 +85,10 @@ public class ClipItemBasicViewBinder extends AbstractViewBinder {
                   viewHolder.date.setText(dateTime[0]);
                   viewHolder.time.setText(dateTime[1]);
               });
+
+        viewHolder.selectionBox.setVisibility(mAdapterListener.isSelectionMode() ? View.VISIBLE : View.GONE);
+        viewHolder.favouritesItem.setVisibility(mAdapterListener.isSelectionMode() ? View.GONE : View.VISIBLE);
+        viewHolder.selectionBox.setChecked(domain.isSelected());
 
         Observable.fromCallable(() -> normalizeText(data.getTextData()))
               .compose(RxTransformer.asyncObservableStream())
@@ -132,6 +139,7 @@ public class ClipItemBasicViewBinder extends AbstractViewBinder {
     // ========================================================================
     private static class ClipItemBasicTypeViewHolder extends RecyclerView.ViewHolder {
 
+        private final CheckBox selectionBox;
         private final ImageView favouritesItem;
         private final TextView date;
         private final TextView time;
@@ -141,6 +149,7 @@ public class ClipItemBasicViewBinder extends AbstractViewBinder {
         private ClipItemBasicTypeViewHolder(View view) {
             super(view);
 
+            selectionBox = (CheckBox) view.findViewById(R.id.selection_box);
             favouritesItem = (ImageView) view.findViewById(R.id.btn_favourites);
             date = (TextView) view.findViewById(R.id.date);
             time = (TextView) view.findViewById(R.id.time);

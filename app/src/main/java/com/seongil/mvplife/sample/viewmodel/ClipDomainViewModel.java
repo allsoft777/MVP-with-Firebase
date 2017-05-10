@@ -17,6 +17,7 @@ public class ClipDomainViewModel implements RecyclerViewItem {
     // fields
     // ========================================================================
     private ClipDomain domain;
+    private boolean isSelected;
 
     // ========================================================================
     // constructors
@@ -28,13 +29,20 @@ public class ClipDomainViewModel implements RecyclerViewItem {
     // ========================================================================
     // getter & setter
     // ========================================================================
-
     public ClipDomain getDomain() {
         return domain;
     }
 
     public void setDomain(ClipDomain domain) {
         this.domain = domain;
+    }
+
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(boolean selected) {
+        isSelected = selected;
     }
 
     // ========================================================================

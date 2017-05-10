@@ -4,6 +4,9 @@ import android.os.Bundle;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -38,6 +41,7 @@ public class ClipListFragment extends BaseFragment<ClipListView, ClipListPresent
     // ========================================================================
     private ClipListViewBinder mClipListViewBinder;
     private InputContainerViewBinder mInputContainerViewBinder;
+    private ActionMode mActionMode;
 
     // ========================================================================
     // constructors
@@ -94,6 +98,10 @@ public class ClipListFragment extends BaseFragment<ClipListView, ClipListPresent
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        if (mActionMode != null) {
+            mActionMode.finish();
+            mActionMode = null;
+        }
         mClipListViewBinder.onDestroyView();
         mInputContainerViewBinder.onDestroyView();
     }
@@ -165,9 +173,33 @@ public class ClipListFragment extends BaseFragment<ClipListView, ClipListPresent
               MainApplication.getAppContext(), SharedPrefKeys.KEY_CLIP_LIST_FAVOURITES_ITEM_SWITCH_ON);
     }
 
+    @Override
+    public void startContextActionBar() {
+        mActionMode = getActivity().startActionMode(new ContextActionModeCallback());
+        setVisibilityOfToolBar(false);
+    }
+
+    @Override
+    public void renderCountOfSelectedItems(int count) {
+        mActionMode.setTitle(" " + count);
+        mActionMode.invalidate();
+    }
+
     // ========================================================================
     // methods
     // ========================================================================
+    private void setVisibilityOfToolBar(boolean visible) {
+        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        if (actionBar == null) {
+            return;
+        }
+        if (visible) {
+            actionBar.show();
+        } else {
+            actionBar.hide();
+        }
+    }
+
     private void updateFavouritesState(MenuItem menuItem, boolean switchOn) {
         if (menuItem == null) {
             return;
@@ -186,4 +218,40 @@ public class ClipListFragment extends BaseFragment<ClipListView, ClipListPresent
     // ========================================================================
     // inner and anonymous classes
     // ========================================================================
+    private class ContextActionModeCallback implements android.view.ActionMode.Callback {
+
+        @Override
+        public boolean onCreateActionMode(android.view.ActionMode mode, Menu menu) {
+            mode.getMenuInflater().inflate(R.menu.menu_clip_list_context_action, menu);
+            mActionMode = mode;
+            return true;
+        }
+
+        @Override
+        public boolean onPrepareActionMode(android.view.ActionMode mode, Menu menu) {
+            final int count = mClipListViewBinder.getSelectedItemCount();
+            mActionMode.setTitle("  " + count);
+            MenuItem done = menu.findItem(R.id.action_delete);
+            done.setEnabled(count > 0);
+            return false;
+        }
+
+        @Override
+        public boolean onActionItemClicked(android.view.ActionMode mode, MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.action_delete:
+                    break;
+                default:
+                    break;
+            }
+            return false;
+        }
+
+        @Override
+        public void onDestroyActionMode(android.view.ActionMode mode) {
+            mClipListViewBinder.clearSelectionMode();
+            mActionMode = null;
+            setVisibilityOfToolBar(true);
+        }
+    }
 }

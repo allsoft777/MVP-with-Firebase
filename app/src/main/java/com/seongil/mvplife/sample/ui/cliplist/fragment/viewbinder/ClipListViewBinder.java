@@ -29,8 +29,12 @@ import com.seongil.recyclerviewlife.scroll.LinearRecyclerViewScrollListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
+import io.reactivex.Single;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * @author seong-il, kim
@@ -109,7 +113,6 @@ public class ClipListViewBinder extends RxMvpViewBinder {
             mAdapter.notifyDataSetChanged();
         }
         mAdapter = new ClipListAdapter(mLayoutInflater);
-        mAdapter.setData(new ArrayList<>());
         mAdapter.useFooterView();
 
         final LinearLayoutManager llm = new LinearLayoutManager(mListView.getContext());
@@ -189,9 +192,19 @@ public class ClipListViewBinder extends RxMvpViewBinder {
         } else if (o instanceof SkyRailClipListEvent.UpdateFavouritesState) {
             SkyRailClipListEvent.UpdateFavouritesState event = (SkyRailClipListEvent.UpdateFavouritesState) o;
             renderFavouritesState(event.getItemKey(), event.isFavouritesItem());
+        } else if (o instanceof SkyRailClipListEvent.SelectItem) {
+            handleSelectItemEvent((SkyRailClipListEvent.SelectItem) o);
         } else {
             throw new AssertionError("There is no defined event : " + o.getClass().getSimpleName());
         }
+    }
+
+    private void handleSelectItemEvent(SkyRailClipListEvent.SelectItem o) {
+        final int pos = getPositionByKey(o.getKey());
+        if (pos == INVALID_KEY_POSITION) {
+            return;
+        }
+        mAdapter.getDataSet().get(pos).setSelected(o.isSelected());
     }
 
     private void handleClickedFavoriteItem(SkyRailClipListEvent.FavoriteItemEvent o) {
@@ -203,11 +216,26 @@ public class ClipListViewBinder extends RxMvpViewBinder {
     }
 
     private void handleClickedItem(SkyRailClipListEvent.ClickItemEvent o) {
+        if (mAdapter.isSelectionMode()) {
+            final int pos = getPositionByKey(o.getKey());
+            if (pos == INVALID_KEY_POSITION) {
+                return;
+            }
+            final boolean curState = mAdapter.getDataSet().get(pos).isSelected();
+            mAdapter.getDataSet().get(pos).setSelected(!curState);
+            mAdapter.notifyItemChanged(pos);
+            mFragmentListener.renderCountOfSelectedItems(mAdapter.getSelectedItemCount());
+        } else {
+            launchDetailView(o.getKey());
+        }
+    }
+
+    private void launchDetailView(@NonNull String itemKey) {
         Intent intent = new Intent(MainApplication.getAppContext(), DetailClipItemActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
         Bundle args = new Bundle();
-        args.putString(ExtraKey.KEY_CLIP_ITEM_KEY, o.getKey());
+        args.putString(ExtraKey.KEY_CLIP_ITEM_KEY, itemKey);
         intent.putExtra(ExtraKey.KEY_EXTRA_BUNDLE, args);
 
         MainApplication.getAppContext().startActivity(intent);
@@ -222,11 +250,24 @@ public class ClipListViewBinder extends RxMvpViewBinder {
         final String targetData = mAdapter.getDataSet().get(pos).getDomain().getTextData();
         removeItemFromListView(o.getKey());
         ClipboardManagerUtil.copyText(targetData);
+        Disposable disposable = Single.timer(1, TimeUnit.SECONDS)
+              .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+              .subscribe(___ -> mListView.scrollToPosition(0));
+        addDisposable(disposable);
     }
 
-    // TODO selection mode
     private void handleLongClickedItem(SkyRailClipListEvent.LongClickItemEvent o) {
-
+        if (mAdapter.isSelectionMode()) {
+            return;
+        }
+        int pos = getPositionByKey(o.getKey());
+        if (pos == INVALID_KEY_POSITION) {
+            return;
+        }
+        mAdapter.getDataSet().get(pos).setSelected(true);
+        mAdapter.setSelectionMode(true);
+        mAdapter.notifyItemRangeChanged(0, mAdapter.getItemCount(true));
+        mFragmentListener.startContextActionBar();
     }
 
     private int getPositionByKey(@NonNull String itemKey) {
@@ -322,6 +363,18 @@ public class ClipListViewBinder extends RxMvpViewBinder {
         ClipDomain domain = mAdapter.getItem(pos).getDomain();
         domain.setFavouritesItem(isFavouritesItem);
         mAdapter.replaceItem(new ClipDomainViewModel(domain), pos);
+    }
+
+    public int getSelectedItemCount() {
+        return mAdapter.getSelectedItemCount();
+    }
+
+    public void clearSelectionMode() {
+        if (mAdapter.isSelectionMode()) {
+            mAdapter.setSelectionMode(false);
+        }
+        mAdapter.clearSelectedItems();
+        mAdapter.notifyItemRangeChanged(0, mAdapter.getItemCount());
     }
 
     // ========================================================================

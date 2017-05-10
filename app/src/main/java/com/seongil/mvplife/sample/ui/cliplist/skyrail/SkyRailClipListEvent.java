@@ -165,4 +165,31 @@ public class SkyRailClipListEvent {
             isFavouritesItem = favouritesItem;
         }
     }
+
+    public static class SelectItem {
+
+        private String itemKey;
+        private boolean isSelected;
+
+        public SelectItem(String itemKey, boolean isSelected) {
+            this.itemKey = itemKey;
+            this.isSelected = isSelected;
+        }
+
+        public String getKey() {
+            return itemKey;
+        }
+
+        public void setItemKey(String itemKey) {
+            this.itemKey = itemKey;
+        }
+
+        public boolean isSelected() {
+            return isSelected;
+        }
+
+        public void setSelected(boolean selected) {
+            isSelected = selected;
+        }
+    }
 }

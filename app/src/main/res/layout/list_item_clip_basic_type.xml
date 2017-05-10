@@ -17,9 +17,7 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingLeft="5dp"
-        android:paddingStart="5dp">
+        android:orientation="horizontal">
 
         <TextView
             android:id="@+id/date"
@@ -35,6 +33,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical">
+
+        <CheckBox
+            android:id="@+id/selection_box"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:clickable="false"
+            android:duplicateParentState="true"
+            android:focusable="false"
+            android:visibility="gone"/>
 
         <ImageView
             android:id="@+id/btn_favourites"

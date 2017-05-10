@@ -20,4 +20,8 @@ public interface ClipListFragmentViewBinderListener {
     void updateFavouritesItemToRepository(@NonNull String itemKey, boolean isFavouritesItem);
 
     boolean isFavouritesItemFilterMode();
+
+    void startContextActionBar();
+
+    void renderCountOfSelectedItems(int count);
 }
