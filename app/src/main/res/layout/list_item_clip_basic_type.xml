@@ -9,7 +9,6 @@
     android:gravity="center_vertical"
     android:minHeight="@dimen/common_list_item_min_height"
     android:orientation="vertical"
-    android:paddingBottom="@dimen/common_list_item_padding_top_down"
     android:paddingEnd="@dimen/activity_horizontal_margin"
     android:paddingStart="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/common_list_item_padding_top_down">
@@ -32,7 +31,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical">
+        android:gravity="center_vertical"
+        android:paddingBottom="@dimen/common_list_item_padding_top_down">
 
         <CheckBox
             android:id="@+id/selection_box"
@@ -63,4 +63,11 @@
             android:layout_height="@dimen/list_item_copy_image_size"
             android:src="@drawable/ic_copy_normal_with_alpha"/>
     </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_marginLeft="45dp"
+        android:layout_marginStart="45dp"
+        android:background="@color/grey_900"/>
 </LinearLayout>

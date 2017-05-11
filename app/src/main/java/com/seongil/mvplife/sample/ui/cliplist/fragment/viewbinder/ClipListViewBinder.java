@@ -23,7 +23,6 @@ import com.seongil.mvplife.sample.ui.cliplist.skyrail.SkyRailClipListEvent;
 import com.seongil.mvplife.sample.ui.detailview.activity.DetailClipItemActivity;
 import com.seongil.mvplife.sample.viewmodel.ClipDomainViewModel;
 import com.seongil.mvplife.viewbinder.RxMvpViewBinder;
-import com.seongil.recyclerviewlife.decor.RecyclerViewDividerItemDecor;
 import com.seongil.recyclerviewlife.model.common.ViewStatus;
 import com.seongil.recyclerviewlife.scroll.LinearRecyclerViewScrollListener;
 
@@ -121,15 +120,7 @@ public class ClipListViewBinder extends RxMvpViewBinder {
         mListView.setAdapter(mAdapter);
         mListView.setHasFixedSize(true);
         mListView.setFocusable(false);
-        addDividerDecorToListView();
         addScrollListenerToListView(llm);
-    }
-
-    private void addDividerDecorToListView() {
-        RecyclerViewDividerItemDecor decor = new RecyclerViewDividerItemDecor(
-              mListView.getContext(), RecyclerView.VERTICAL, R.drawable.common_recyclerview_list_item_divider);
-        decor.hideLastItemDivider(true);
-        mListView.addItemDecoration(decor);
     }
 
     private void addScrollListenerToListView(@NonNull LinearLayoutManager llm) {
