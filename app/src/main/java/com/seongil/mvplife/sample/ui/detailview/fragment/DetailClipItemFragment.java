@@ -3,7 +3,6 @@ package com.seongil.mvplife.sample.ui.detailview.fragment;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
@@ -252,7 +251,7 @@ public class DetailClipItemFragment
             getActivity().finish();
             return;
         }
-        renderDialogToAskUpdateDataToRepository();
+        insertOrUpdateDataToRepository();
     }
 
     private void handleExitWithEditItemMode() {
@@ -261,36 +260,16 @@ public class DetailClipItemFragment
             getActivity().finish();
             return;
         }
-        renderDialogToAskUpdateDataToRepository();
+        insertOrUpdateDataToRepository();
     }
 
-    private void renderDialogToAskUpdateDataToRepository() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle(getString(R.string.exit_confirm_dialog))
-              .setMessage(exitDialogMessage())
-              .setCancelable(false)
-              .setPositiveButton(getString(R.string.confirm), (dialog, whichButton) -> {
-                  if (mEditBodyViewBinder.isNewItemInsertionMode()) {
-                      getPresenter().insertNewItemToRepository(getResources(),
-                            mEditBodyViewBinder.buildDomainForInsertionToRepository());
-                      return;
-                  }
-                  getPresenter().updateClipDataToRepository(getResources(),
-                        mEditBodyViewBinder.getDomainWithInputData());
-              })
-              .setNegativeButton(getString(R.string.no), (dialog, whichButton) -> {
-                  finishActivity(true);
-                  dialog.dismiss();
-              });
-        AlertDialog dialog = builder.create();
-        dialog.show();
-    }
-
-    private String exitDialogMessage() {
+    private void insertOrUpdateDataToRepository() {
         if (mEditBodyViewBinder.isNewItemInsertionMode()) {
-            return getString(R.string.msg_insert_new_item);
+            getPresenter().insertNewItemToRepository(getResources(),
+                  mEditBodyViewBinder.buildDomainForInsertionToRepository());
+            return;
         }
-        return getString(R.string.msg_exit_with_saving_item);
+        getPresenter().updateClipDataToRepository(getResources(), mEditBodyViewBinder.getDomainWithInputData());
     }
 
     // ========================================================================
