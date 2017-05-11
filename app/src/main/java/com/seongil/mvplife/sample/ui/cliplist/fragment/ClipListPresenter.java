@@ -10,6 +10,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.seongil.mvplife.base.RxMvpPresenter;
+import com.seongil.mvplife.sample.R;
+import com.seongil.mvplife.sample.application.MainApplication;
 import com.seongil.mvplife.sample.common.utils.RxTransformer;
 import com.seongil.mvplife.sample.domain.ClipDomain;
 import com.seongil.mvplife.sample.repository.common.RepoTableContracts;
@@ -76,6 +78,17 @@ public class ClipListPresenter extends RxMvpPresenter<ClipListView> {
               .flatMap(ref -> fetchDataFromRepository(ref, lastLoadedItemKey, filterFavouritesItem))
               .compose(RxTransformer.asyncObservableStream())
               .subscribe();
+        addDisposable(disposable);
+    }
+
+    public void removeClipItemsFromRepository(@NonNull List<String> itemKeys) {
+        getView().showProgressDialog(MainApplication.getRes().getString(R.string.msg_deleting));
+        Disposable disposable = Observable.zip(
+              SummaryTableRef.getInstance().removeClipItems(itemKeys),
+              DetailTableRef.getInstance().removeClipItems(itemKeys),
+              (result1, result2) -> result1 && result2)
+              .compose(RxTransformer.asyncObservableStream())
+              .subscribe(result -> getView().notifyRemovedItems(itemKeys), t -> getView().renderError(t));
         addDisposable(disposable);
     }
 

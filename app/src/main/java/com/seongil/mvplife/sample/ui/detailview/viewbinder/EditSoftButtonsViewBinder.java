@@ -83,7 +83,7 @@ public class EditSoftButtonsViewBinder implements MvpViewBinder {
     // methods
     // ========================================================================
     private Observable<Object> applyButtonClickThrottle(Observable<Object> obj) {
-        return obj.throttleFirst(300, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread());
+        return obj.throttleFirst(1, TimeUnit.SECONDS, AndroidSchedulers.mainThread());
     }
 
     private void toggleEditModel() {

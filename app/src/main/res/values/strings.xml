@@ -3,6 +3,7 @@
     <string name="error">Error</string>
     <string name="confirm">Confirm</string>
     <string name="no">No</string>
+    <string name="delete">Delete</string>
     <string name="detail_view">Detail view</string>
     <string name="edit_view">Edit view</string>
     <string name="exit_confirm_dialog">Exit Confirmation</string>
@@ -11,6 +12,8 @@
     <string name="search">Search</string>
     <string name="favourites">Favourites</string>
 
+    <string name="msg_an_item_removed">item removed.</string>
+    <string name="msg_multiple_items_removed">items removed.</string>
     <string name="msg_hint_make_notes">Make notes…</string>
     <string name="msg_inserting">Inserting…</string>
     <string name="msg_deleting">Deleting…</string>

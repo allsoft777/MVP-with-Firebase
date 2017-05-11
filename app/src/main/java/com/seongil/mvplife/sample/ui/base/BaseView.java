@@ -1,12 +1,14 @@
-package com.seongil.mvplife.sample.ui.settings;
+package com.seongil.mvplife.sample.ui.base;
 
-import com.seongil.mvplife.sample.ui.base.BaseView;
+import android.support.annotation.NonNull;
+
+import com.seongil.mvplife.base.MvpView;
 
 /**
  * @author seong-il, kim
- * @since 17. 5. 6
+ * @since 2017. 5. 11.
  */
-public interface SettingsView extends BaseView {
+public interface BaseView extends MvpView {
 
     // ========================================================================
     // constants
@@ -15,4 +17,7 @@ public interface SettingsView extends BaseView {
     // ========================================================================
     // methods
     // ========================================================================
+    void showProgressDialog(@NonNull String msg);
+
+    void dismissProgressDialog();
 }

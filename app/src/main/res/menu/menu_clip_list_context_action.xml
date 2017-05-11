@@ -4,8 +4,8 @@
 
     <item
         android:id="@+id/action_delete"
-        android:icon="@android:drawable/ic_menu_delete"
-        android:title="Delete"
+        android:icon="@drawable/ic_action_delete_normal"
+        android:title="@string/delete"
         android:titleCondensed="Delete"
         app:showAsAction="ifRoom|withText">
     </item>

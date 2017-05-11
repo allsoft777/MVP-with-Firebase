@@ -1,6 +1,5 @@
 package com.seongil.mvplife.sample.ui.detailview.fragment;
 
-import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
@@ -42,7 +41,6 @@ public class DetailClipItemFragment
     // ========================================================================
     private EditBodyViewBinder mEditBodyViewBinder;
     private EditSoftButtonsViewBinder mSoftButtonsViewBinder;
-    private ProgressDialog mProgressDialog;
 
     // ========================================================================
     // constructors
@@ -103,8 +101,6 @@ public class DetailClipItemFragment
     public void onDestroyView() {
         super.onDestroyView();
         mEditBodyViewBinder.onDestroyView();
-        dismissProgressDialog();
-        mProgressDialog = null;
     }
 
     @Override
@@ -129,22 +125,6 @@ public class DetailClipItemFragment
         ClipListViewSkyRail.getInstance().getSkyRail().send(new SkyRailClipListEvent.DeletedItem(itemKey));
         renderToastMsg(getString(R.string.msg_remove_successfully));
         getActivity().finish();
-    }
-
-    @Override
-    public void dismissProgressDialog() {
-        if (mProgressDialog != null && mProgressDialog.isShowing()) {
-            mProgressDialog.dismiss();
-        }
-    }
-
-    @Override
-    public void showProgressDialog(@NonNull String msg) {
-        if (mProgressDialog == null) {
-            createProgressDialog();
-        }
-        mProgressDialog.setMessage(msg);
-        mProgressDialog.show();
     }
 
     @Override
@@ -282,12 +262,6 @@ public class DetailClipItemFragment
             return;
         }
         renderDialogToAskUpdateDataToRepository();
-    }
-
-    private void createProgressDialog() {
-        mProgressDialog = new ProgressDialog(getActivity());
-        mProgressDialog.setCanceledOnTouchOutside(false);
-        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
     }
 
     private void renderDialogToAskUpdateDataToRepository() {

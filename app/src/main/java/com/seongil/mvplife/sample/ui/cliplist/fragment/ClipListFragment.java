@@ -21,6 +21,10 @@ import com.seongil.mvplife.sample.ui.cliplist.fragment.viewbinder.ClipListViewBi
 import com.seongil.mvplife.sample.ui.cliplist.fragment.viewbinder.InputContainerViewBinder;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 
 /**
  * @author seong-il, kim
@@ -115,14 +119,9 @@ public class ClipListFragment extends BaseFragment<ClipListView, ClipListPresent
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_search) {
-
             return true;
         } else if (item.getItemId() == R.id.action_star) {
-            final boolean favouritesItemFilterMode = !isFavouritesItemFilterMode();
-            updateFavouritesState(item, favouritesItemFilterMode);
-            mClipListViewBinder.renderLoadingView();
-            mClipListViewBinder.initializeListView();
-            getPresenter().fetchClipListFromRepository("", favouritesItemFilterMode);
+            handleClickedFavouritesItem(item);
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -182,6 +181,18 @@ public class ClipListFragment extends BaseFragment<ClipListView, ClipListPresent
         mActionMode.invalidate();
     }
 
+    @Override
+    public void notifyRemovedItems(@NonNull List<String> itemKeys) {
+        dismissProgressDialog();
+        mClipListViewBinder.removeItems(itemKeys);
+
+        final int size = itemKeys.size();
+        String msg = String.valueOf(size) + " ";
+        msg += size > 1 ? getString(R.string.msg_multiple_items_removed)
+              : getString(R.string.msg_an_item_removed);
+        renderToastMsg(msg);
+    }
+
     // ========================================================================
     // methods
     // ========================================================================
@@ -198,6 +209,26 @@ public class ClipListFragment extends BaseFragment<ClipListView, ClipListPresent
         menuItem.setIcon(iconRes);
         DefaultSharedPrefWrapper.getInstance().putBoolean(
               MainApplication.getAppContext(), SharedPrefKeys.KEY_CLIP_LIST_FAVOURITES_ITEM_SWITCH_ON, switchOn);
+    }
+
+    private void removeSelectedItems() {
+        getPresenter().removeClipItemsFromRepository(mClipListViewBinder.getSelectedItemKeys());
+        mActionMode.finish();
+    }
+
+    private void handleClickedFavouritesItem(MenuItem item) {
+        if (mClipListViewBinder.isInitialLoadingState()) {
+            return;
+        }
+
+        item.setEnabled(false);
+        Observable.timer(1, TimeUnit.SECONDS, AndroidSchedulers.mainThread()).subscribe(___ -> item.setEnabled(true));
+
+        final boolean favouritesItemFilterMode = !isFavouritesItemFilterMode();
+        updateFavouritesState(item, favouritesItemFilterMode);
+        mClipListViewBinder.renderLoadingView();
+        mClipListViewBinder.initializeListView();
+        getPresenter().fetchClipListFromRepository("", favouritesItemFilterMode);
     }
 
     // ========================================================================
@@ -225,7 +256,8 @@ public class ClipListFragment extends BaseFragment<ClipListView, ClipListPresent
         public boolean onActionItemClicked(android.view.ActionMode mode, MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.action_delete:
-                    break;
+                    removeSelectedItems();
+                    return true;
                 default:
                     break;
             }

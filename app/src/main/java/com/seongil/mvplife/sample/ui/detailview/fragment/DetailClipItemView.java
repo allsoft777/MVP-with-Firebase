@@ -2,14 +2,14 @@ package com.seongil.mvplife.sample.ui.detailview.fragment;
 
 import android.support.annotation.NonNull;
 
-import com.seongil.mvplife.base.MvpView;
 import com.seongil.mvplife.sample.domain.ClipDomain;
+import com.seongil.mvplife.sample.ui.base.BaseView;
 
 /**
  * @author seong-il, kim
  * @since 2017. 4. 30.
  */
-public interface DetailClipItemView extends MvpView {
+public interface DetailClipItemView extends BaseView {
 
     void renderClipDomain(@NonNull ClipDomain domain);
 
@@ -20,10 +20,6 @@ public interface DetailClipItemView extends MvpView {
     void notifyUpdatedClipItem(@NonNull final ClipDomain domain);
 
     void renderError(@NonNull Throwable t);
-
-    void showProgressDialog(@NonNull String msg);
-
-    void dismissProgressDialog();
 
     void onBackPressed();
 

@@ -10,6 +10,9 @@ import com.seongil.recyclerviewlife.model.common.ViewStatus;
 import com.seongil.recyclerviewlife.single.RecyclerListViewAdapter;
 import com.seongil.recyclerviewlife.single.viewbinder.AbstractFooterViewBinder;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author seong-il, kim
  * @since 17. 4. 26
@@ -64,8 +67,8 @@ public class ClipListAdapter extends RecyclerListViewAdapter<ClipDomainViewModel
     // ========================================================================
     public int getSelectedItemCount() {
         int cnt = 0;
-        for(ClipDomainViewModel model : getDataSet(false)) {
-            if(model.isSelected()) {
+        for (ClipDomainViewModel model : getDataSet(false)) {
+            if (model.isSelected()) {
                 cnt++;
             }
         }
@@ -73,8 +76,27 @@ public class ClipListAdapter extends RecyclerListViewAdapter<ClipDomainViewModel
     }
 
     public void clearSelectedItems() {
-        for(ClipDomainViewModel model : getDataSet(false)) {
+        for (ClipDomainViewModel model : getDataSet(false)) {
             model.setSelected(false);
+        }
+    }
+
+    public List<String> retrieveSelectedItemKeys() {
+        List<String> result = new ArrayList<>();
+        for (ClipDomainViewModel model : getDataSet(false)) {
+            if (model.isSelected()) {
+                result.add(model.getDomain().getKey());
+            }
+        }
+        return result;
+    }
+
+    public void removeItem(@NonNull String itemKey) {
+        for (ClipDomainViewModel model : getDataSet(false)) {
+            if (model.getDomain().getKey().equals(itemKey)) {
+                getDataSet().remove(model);
+                return;
+            }
         }
     }
 

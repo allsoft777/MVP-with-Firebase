@@ -16,6 +16,7 @@ import com.seongil.mvplife.sample.repository.common.RepoTableContracts;
 import com.seongil.mvplife.sample.repository.exception.InvalidFirebaseUser;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import io.reactivex.Observable;
@@ -231,6 +232,33 @@ public class DetailTableRef {
         });
     }
 
+    public Observable<Boolean> removeClipItems(@NonNull List<String> itemKeys) {
+        return Observable.create(e -> {
+            final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            if (e.isDisposed()) {
+                return;
+            }
+            if (user == null) {
+                e.onError(new InvalidFirebaseUser("Current FireBase User is invalid."));
+                return;
+            }
+
+            Map<String, Object> childValues = new HashMap<>();
+            for (String itemKey : itemKeys) {
+                childValues.put(itemKey, null);
+            }
+            FirebaseDatabase db = FirebaseDatabase.getInstance();
+            DatabaseReference ref =
+                  db.getReference(RepoTableContracts.TABLE_DETAIL_POST).child(user.getUid());
+            ref.updateChildren(childValues, (databaseError, databaseReference) -> {
+                if (databaseError != null) {
+                    e.onError(new Throwable(databaseError.getMessage()));
+                } else {
+                    e.onNext(true);
+                }
+            });
+        });
+    }
     // ========================================================================
     // inner and anonymous classes
     // ========================================================================

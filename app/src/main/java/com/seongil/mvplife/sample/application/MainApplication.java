@@ -2,6 +2,7 @@ package com.seongil.mvplife.sample.application;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.res.Resources;
 
 import com.seongil.mvplife.sample.service.ClipboardServiceHelper;
 import com.squareup.leakcanary.LeakCanary;
@@ -48,6 +49,10 @@ public class MainApplication extends Application {
     // ========================================================================
     public static Context getAppContext() {
         return sInstance.getApplicationContext();
+    }
+
+    public static Resources getRes() {
+        return getAppContext().getResources();
     }
 
     // ========================================================================

@@ -319,6 +319,10 @@ public class ClipListViewBinder extends RxMvpViewBinder {
     }
 
     private void insertItemToFirstPosition(@NonNull ClipDomain domain) {
+        if (mFragmentListener.isFavouritesItemFilterMode() && !domain.isFavouritesItem()) {
+            return;
+        }
+
         if (mState != STATE_LIST_VIEW && mState != STATE_MORE_ITEM_LOADING_VIEW) {
             mExistNextItemMore = false;
             mAdapter.updateFooterViewStatus(ViewStatus.VISIBLE_LABEL_VIEW, false);
@@ -326,6 +330,7 @@ public class ClipListViewBinder extends RxMvpViewBinder {
         if (mState != STATE_LIST_VIEW) {
             renderListView();
         }
+
         mAdapter.addItemToFirstPosition(new ClipDomainViewModel(domain));
     }
 
@@ -360,7 +365,7 @@ public class ClipListViewBinder extends RxMvpViewBinder {
             return;
         }
 
-        ClipDomain domain = mAdapter.getItem(pos).getDomain();
+        final ClipDomain domain = mAdapter.getItem(pos).getDomain();
         domain.setFavouritesItem(isFavouritesItem);
         mAdapter.replaceItem(new ClipDomainViewModel(domain), pos);
     }
@@ -369,12 +374,27 @@ public class ClipListViewBinder extends RxMvpViewBinder {
         return mAdapter.getSelectedItemCount();
     }
 
+    public List<String> getSelectedItemKeys() {
+        return mAdapter.retrieveSelectedItemKeys();
+    }
+
     public void clearSelectionMode() {
         if (mAdapter.isSelectionMode()) {
             mAdapter.setSelectionMode(false);
         }
         mAdapter.clearSelectedItems();
         mAdapter.notifyItemRangeChanged(0, mAdapter.getItemCount());
+    }
+
+    public void removeItems(@NonNull List<String> itemKeys) {
+        for (String itemKey : itemKeys) {
+            mAdapter.removeItem(itemKey);
+        }
+        mAdapter.notifyDataSetChanged();
+    }
+
+    public boolean isInitialLoadingState() {
+        return mState == STATE_ENTIRE_LOADING_VIEW;
     }
 
     // ========================================================================
