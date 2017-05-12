@@ -17,7 +17,7 @@ import com.seongil.mvplife.sample.common.utils.RxTransformer;
 import com.seongil.mvplife.sample.common.utils.StringUtil;
 import com.seongil.mvplife.sample.domain.ClipDomain;
 import com.seongil.mvplife.sample.ui.cliplist.skyrail.ClipListViewSkyRail;
-import com.seongil.mvplife.sample.ui.cliplist.skyrail.SkyRailClipListEvent;
+import com.seongil.mvplife.sample.ui.cliplist.skyrail.ClipListViewSkyRailEvents;
 import com.seongil.mvplife.sample.viewmodel.ClipDomainViewModel;
 import com.seongil.recyclerviewlife.model.common.RecyclerViewItem;
 import com.seongil.recyclerviewlife.single.viewbinder.AbstractViewBinder;
@@ -97,22 +97,22 @@ public class ClipItemBasicViewBinder extends AbstractViewBinder {
         RxView.clicks(viewHolder.itemView)
               .compose(this::applyThrottleForButton)
               .subscribe(v -> ClipListViewSkyRail.getInstance().getSkyRail()
-                    .send(new SkyRailClipListEvent.ClickItemEvent(data.getKey())));
+                    .send(new ClipListViewSkyRailEvents.ClickItemEvent(data.getKey())));
 
         RxView.longClicks(viewHolder.itemView)
               .compose(this::applyThrottleForButton)
               .subscribe(v -> ClipListViewSkyRail.getInstance().getSkyRail()
-                    .send(new SkyRailClipListEvent.LongClickItemEvent(data.getKey())));
+                    .send(new ClipListViewSkyRailEvents.LongClickItemEvent(data.getKey())));
 
         RxView.clicks(viewHolder.copy)
               .compose(this::applyThrottleForButton)
               .subscribe(v -> ClipListViewSkyRail.getInstance().getSkyRail().send(
-                    new SkyRailClipListEvent.CopyItemToClipboard(data.getKey())));
+                    new ClipListViewSkyRailEvents.CopyItemToClipboard(data.getKey())));
 
         RxView.clicks(viewHolder.favouritesItem)
               .compose(this::applyThrottleForButton)
               .subscribe(v -> ClipListViewSkyRail.getInstance().getSkyRail()
-                    .send(new SkyRailClipListEvent.FavoriteItemEvent(data.getKey(), !data.isFavouritesItem())));
+                    .send(new ClipListViewSkyRailEvents.FavoriteItemEvent(data.getKey(), !data.isFavouritesItem())));
 
         viewHolder.favouritesItem.setBackgroundResource(
               data.isFavouritesItem() ? R.drawable.selector_ic_favorite_true : R.drawable.selector_ic_favorite_false);

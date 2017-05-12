@@ -1,20 +1,25 @@
-package com.seongil.mvplife.sample.common.datetime;
+package com.seongil.mvplife.sample.common.share;
 
-import java.text.DecimalFormat;
+import android.support.annotation.NonNull;
+
+import com.seongil.mvplife.sample.common.datetime.RxFormat;
+import com.seongil.mvplife.sample.domain.ClipDomain;
+
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-
-import io.reactivex.Observable;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * @author seong-il, kim
- * @since 17. 4. 30
+ * @since 17. 5. 12
  */
-public class RxFormat {
+public class ShareClipItemManager {
 
     // ========================================================================
     // constants
     // ========================================================================
+    private static final SimpleDateFormat DATE_FORMAT =
+          new SimpleDateFormat("yyyy-MM-dd, HH:mm:ss", Locale.getDefault());
 
     // ========================================================================
     // fields
@@ -23,9 +28,6 @@ public class RxFormat {
     // ========================================================================
     // constructors
     // ========================================================================
-    private RxFormat() {
-        throw new AssertionError("Could not create instance.");
-    }
 
     // ========================================================================
     // getter & setter
@@ -38,25 +40,17 @@ public class RxFormat {
     // ========================================================================
     // methods
     // ========================================================================
-    public static Observable<String> convertDateTimeString(SimpleDateFormat sdf, long millis) {
-        return Observable.create(e -> {
-            String result = buildDateTimeString(sdf, millis);
-            if (e.isDisposed()) {
-                return;
+    public String buildShareText(@NonNull List<ClipDomain> domainList) {
+        StringBuilder sb = new StringBuilder(1024);
+        final int size = domainList.size();
+        for (int i = 0; i < size; i++) {
+            if (i != 0) {
+                sb.append("\n\n");
             }
-            e.onNext(result);
-        });
-    }
-
-    public static Observable<String> decimalFormat(String format, long number1) {
-        return Observable.fromCallable(() -> new DecimalFormat(format).format(number1));
-    }
-
-    public static String buildDateTimeString(SimpleDateFormat sdf, long millis) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(millis);
-        sdf.setCalendar(calendar);
-        return sdf.format(calendar.getTime());
+            sb.append(RxFormat.buildDateTimeString(DATE_FORMAT, domainList.get(i).getCreatedAt())).append("\n");
+            sb.append(domainList.get(i).getTextData());
+        }
+        return sb.toString();
     }
 
     // ========================================================================

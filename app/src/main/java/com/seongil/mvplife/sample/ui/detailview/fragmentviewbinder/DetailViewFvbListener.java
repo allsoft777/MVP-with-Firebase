@@ -1,10 +1,10 @@
-package com.seongil.mvplife.sample.ui.detailview.viewbinder;
+package com.seongil.mvplife.sample.ui.detailview.fragmentviewbinder;
 
 /**
  * @author seong-il, kim
  * @since 2017. 4. 30.
  */
-public interface EditClipItemFragmentViewBinderListener {
+public interface DetailViewFvbListener {
 
     // ========================================================================
     // constants

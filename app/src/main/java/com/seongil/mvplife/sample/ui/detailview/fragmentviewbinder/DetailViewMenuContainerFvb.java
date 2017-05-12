@@ -1,4 +1,4 @@
-package com.seongil.mvplife.sample.ui.detailview.viewbinder;
+package com.seongil.mvplife.sample.ui.detailview.fragmentviewbinder;
 
 import android.support.annotation.NonNull;
 import android.view.View;
@@ -17,7 +17,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
  * @author seong-il, kim
  * @since 17. 5. 2
  */
-public class EditSoftButtonsViewBinder implements MvpViewBinder {
+public class DetailViewMenuContainerFvb implements MvpViewBinder {
 
     // ========================================================================
     // constants
@@ -26,7 +26,7 @@ public class EditSoftButtonsViewBinder implements MvpViewBinder {
     // ========================================================================
     // fields
     // ========================================================================
-    private EditClipItemFragmentViewBinderListener mFragmentListener;
+    private DetailViewFvbListener mDetailViewFvbListener;
     private boolean mIsEditMode;
     private Button mFavoriteBtn;
     private Button mEditModeBtn;
@@ -34,8 +34,8 @@ public class EditSoftButtonsViewBinder implements MvpViewBinder {
     // ========================================================================
     // constructors
     // ========================================================================
-    public EditSoftButtonsViewBinder(EditClipItemFragmentViewBinderListener fragmentViewBinderListener) {
-        mFragmentListener = fragmentViewBinderListener;
+    public DetailViewMenuContainerFvb(@NonNull DetailViewFvbListener detailViewFvbListener) {
+        mDetailViewFvbListener = detailViewFvbListener;
     }
 
     // ========================================================================
@@ -55,28 +55,28 @@ public class EditSoftButtonsViewBinder implements MvpViewBinder {
         mFavoriteBtn = (Button) layout.findViewById(R.id.btn_favourites);
         RxView.clicks(mFavoriteBtn)
               .compose(this::applyButtonClickThrottle)
-              .subscribe(___ -> mFragmentListener.toggleFavoriteItem());
+              .subscribe(___ -> mDetailViewFvbListener.toggleFavoriteItem());
 
         RxView.clicks(layout.findViewById(R.id.btn_delete))
               .compose(this::applyButtonClickThrottle)
-              .subscribe(___ -> mFragmentListener.deleteClipItem());
+              .subscribe(___ -> mDetailViewFvbListener.deleteClipItem());
 
         RxView.clicks(layout.findViewById(R.id.btn_copy))
               .compose(this::applyButtonClickThrottle)
-              .subscribe(___ -> mFragmentListener.copyClipItem());
+              .subscribe(___ -> mDetailViewFvbListener.copyClipItem());
 
         RxView.clicks(layout.findViewById(R.id.btn_share))
               .compose(this::applyButtonClickThrottle)
-              .subscribe(___ -> mFragmentListener.shareClipItem());
+              .subscribe(___ -> mDetailViewFvbListener.shareClipItem());
 
         RxView.clicks(layout.findViewById(R.id.btn_close))
               .compose(this::applyButtonClickThrottle)
-              .subscribe(___ -> mFragmentListener.finishActivity(false));
+              .subscribe(___ -> mDetailViewFvbListener.finishActivity(false));
     }
 
     @Override
     public void onDestroyView() {
-        mFragmentListener = null;
+        mDetailViewFvbListener = null;
     }
 
     // ========================================================================
@@ -89,13 +89,13 @@ public class EditSoftButtonsViewBinder implements MvpViewBinder {
     private void toggleEditModel() {
         if (mIsEditMode) {
             mEditModeBtn.setBackgroundResource(R.drawable.selector_ic_edit);
-            mFragmentListener.setReadOnlyMode();
+            mDetailViewFvbListener.setReadOnlyMode();
             mIsEditMode = false;
             return;
         }
 
         mEditModeBtn.setBackgroundResource(R.drawable.selector_ic_read_only);
-        mFragmentListener.setEditMode();
+        mDetailViewFvbListener.setEditMode();
         mIsEditMode = true;
     }
 

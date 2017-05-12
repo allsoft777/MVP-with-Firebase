@@ -10,7 +10,7 @@ import com.seongil.mvplife.sample.common.ExtraKey;
 import com.seongil.mvplife.sample.ui.base.BaseActivity;
 import com.seongil.mvplife.sample.ui.detailview.fragment.DetailClipItemFragment;
 import com.seongil.mvplife.sample.ui.detailview.skyrail.DetailViewSkyRail;
-import com.seongil.mvplife.sample.ui.detailview.skyrail.SkyRailClipItemDetailViewEvent;
+import com.seongil.mvplife.sample.ui.detailview.skyrail.DetailViewSkyRailEvents;
 
 /**
  * @author seong-il, kim
@@ -49,7 +49,7 @@ public class DetailClipItemActivity extends BaseActivity {
 
     @Override
     public void onBackPressed() {
-        DetailViewSkyRail.getInstance().getSkyRail().send(new SkyRailClipItemDetailViewEvent.OnBackPressedEvent());
+        DetailViewSkyRail.getInstance().getSkyRail().send(new DetailViewSkyRailEvents.OnBackPressedEvent());
     }
 
     // ========================================================================
