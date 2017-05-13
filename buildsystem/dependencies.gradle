@@ -60,17 +60,18 @@ ext {
     // Dependency Scopes
     // ========================================================================
     googleDependencies = [
-        supportV4       : "com.android.support:support-v4:${supportVersion}",
-        recyclerview    : "com.android.support:recyclerview-v7:${supportVersion}",
-        appCompatV7     : "com.android.support:appcompat-v7:${supportVersion}",
-        annotation      : "com.android.support:support-annotations:${supportVersion}",
-        design          : "com.android.support:design:${supportVersion}",
+        supportV4            : "com.android.support:support-v4:${supportVersion}",
+        recyclerview         : "com.android.support:recyclerview-v7:${supportVersion}",
+        appCompatV7          : "com.android.support:appcompat-v7:${supportVersion}",
+        annotation           : "com.android.support:support-annotations:${supportVersion}",
+        design               : "com.android.support:design:${supportVersion}",
 
-        firebaseCore    : "com.google.firebase:firebase-core:${playService}",
-        playServiceAuth : "com.google.android.gms:play-services-auth:${playService}",
-        firebaseAuth    : "com.google.firebase:firebase-auth:${playService}",
-        firebaseStorage : "com.google.firebase:firebase-storage:${playService}",
-        firebaseDatabase: "com.google.firebase:firebase-database:${playService}",
+        firebaseCore         : "com.google.firebase:firebase-core:${playService}",
+        playServiceAuth      : "com.google.android.gms:play-services-auth:${playService}",
+        firebaseAuth         : "com.google.firebase:firebase-auth:${playService}",
+        firebaseStorage      : "com.google.firebase:firebase-storage:${playService}",
+        firebaseDatabase     : "com.google.firebase:firebase-database:${playService}",
+        firebaseCrashReporter: "com.google.firebase:firebase-crash:${playService}",
     ]
 
     testDependencies = [

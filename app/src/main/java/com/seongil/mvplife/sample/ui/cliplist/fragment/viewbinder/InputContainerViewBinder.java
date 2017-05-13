@@ -73,6 +73,10 @@ public class InputContainerViewBinder implements MvpViewBinder {
         mContainerView.setVisibility(View.VISIBLE);
     }
 
+    public void renderErrorView(@NonNull Throwable t) {
+        // Nothing
+    }
+
     // ========================================================================
     // inner and anonymous classes
     // ========================================================================

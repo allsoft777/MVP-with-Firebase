@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.seongil.mvplife.sample.R;
 import com.seongil.mvplife.sample.application.MainApplication;
 import com.seongil.mvplife.sample.common.ExtraKey;
+import com.seongil.mvplife.sample.common.exception.NetworkConException;
 import com.seongil.mvplife.sample.common.utils.ClipboardManagerUtil;
 import com.seongil.mvplife.sample.common.utils.RxTransformer;
 import com.seongil.mvplife.sample.domain.ClipDomain;
@@ -48,6 +49,7 @@ public class ClipListViewBinder extends RxMvpViewBinder {
     private static final int STATE_EMPTY_VIEW = 1;
     private static final int STATE_ENTIRE_LOADING_VIEW = 2;
     private static final int STATE_MORE_ITEM_LOADING_VIEW = 3;
+    private static final int STATE_ERROR_VIEW = 4;
     private static final int INVALID_KEY_POSITION = -1;
 
     // ========================================================================
@@ -61,6 +63,10 @@ public class ClipListViewBinder extends RxMvpViewBinder {
     private View mEmptyContainer;
     private ClipListAdapter mAdapter;
     private boolean mExistNextItemMore = true;
+
+    private View mErrorContainer;
+    private ImageView mErrorIcon;
+    private TextView mErrorText;
 
     // ========================================================================
     // constructors
@@ -85,9 +91,15 @@ public class ClipListViewBinder extends RxMvpViewBinder {
         initializeListView();
 
         mLoadingView = (ProgressBar) layout.findViewById(R.id.loading_bar);
+
         mEmptyContainer = layout.findViewById(R.id.empty_container);
         ImageView emptyIcon = (ImageView) mEmptyContainer.findViewById(R.id.empty_icon);
         TextView emptyText = (TextView) mEmptyContainer.findViewById(R.id.empty_text);
+
+        mErrorContainer = layout.findViewById(R.id.error_container);
+        mErrorIcon = (ImageView) mErrorContainer.findViewById(R.id.error_icon);
+        mErrorText = (TextView) mErrorContainer.findViewById(R.id.error_msg);
+
         emptyIcon.setBackgroundResource(R.drawable.ic_in_group_add_item_guide);
         emptyText.setText(emptyText.getResources().getString(R.string.msg_touch_to_add_item));
 
@@ -272,6 +284,7 @@ public class ClipListViewBinder extends RxMvpViewBinder {
     }
 
     public void renderListView() {
+        mErrorContainer.setVisibility(View.GONE);
         mListView.setVisibility(View.VISIBLE);
         mLoadingView.setVisibility(View.GONE);
         mEmptyContainer.setVisibility(View.GONE);
@@ -279,6 +292,7 @@ public class ClipListViewBinder extends RxMvpViewBinder {
     }
 
     public void renderEmptyView() {
+        mErrorContainer.setVisibility(View.GONE);
         mLoadingView.setVisibility(View.GONE);
         mListView.setVisibility(View.GONE);
         mEmptyContainer.setVisibility(View.VISIBLE);
@@ -286,10 +300,26 @@ public class ClipListViewBinder extends RxMvpViewBinder {
     }
 
     public void renderLoadingView() {
+        mErrorContainer.setVisibility(View.GONE);
         mLoadingView.setVisibility(View.VISIBLE);
         mListView.setVisibility(View.GONE);
         mEmptyContainer.setVisibility(View.GONE);
         mState = STATE_ENTIRE_LOADING_VIEW;
+    }
+
+    public void renderErrorView(Throwable t) {
+        mErrorContainer.setVisibility(View.VISIBLE);
+        mLoadingView.setVisibility(View.GONE);
+        mListView.setVisibility(View.GONE);
+        mEmptyContainer.setVisibility(View.GONE);
+        mState = STATE_ERROR_VIEW;
+
+        if (t instanceof NetworkConException) {
+            mErrorText.setText(mErrorText.getResources().getString(R.string.err_network_connection_failed));
+            mErrorIcon.setBackgroundResource(R.drawable.error_network_connection);
+        } else {
+            throw new IllegalArgumentException("Invalid exception code.");
+        }
     }
 
     public void insertCollectionToLastPosition(@NonNull List<ClipDomain> list, final boolean existNextItemMore) {

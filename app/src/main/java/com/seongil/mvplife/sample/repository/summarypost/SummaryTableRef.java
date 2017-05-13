@@ -11,6 +11,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
+import com.seongil.mvplife.sample.application.MainApplication;
+import com.seongil.mvplife.sample.common.exception.NetworkConException;
+import com.seongil.mvplife.sample.common.firebase.reporter.CrashReporter;
+import com.seongil.mvplife.sample.common.utils.NetworkUtils;
 import com.seongil.mvplife.sample.common.utils.StringUtil;
 import com.seongil.mvplife.sample.domain.ClipDomain;
 import com.seongil.mvplife.sample.repository.common.RepoTableContracts;
@@ -21,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import io.reactivex.Observable;
+import io.reactivex.Single;
 
 /**
  * @author seong-il, kim
@@ -65,7 +70,7 @@ public class SummaryTableRef {
                 return;
             }
             if (db == null) {
-                e.onError(new Throwable("FirebaseDatabase is invalid."));
+                e.onError(new Throwable("Firebase Database is invalid."));
                 return;
             }
             e.onNext(db.getReference(RepoTableContracts.TABLE_SUMMARY_POSTS).child(user.getUid()));
@@ -74,14 +79,16 @@ public class SummaryTableRef {
 
     public Observable<DatabaseReference> insertNewItemToRepository(@NonNull ClipDomain domain) {
         return Observable.create(e -> {
-            final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-            if (e.isDisposed()) {
+            if (!NetworkUtils.isInternetOn(MainApplication.getAppContext())) {
+                e.onError(new NetworkConException());
                 return;
             }
+            final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
             if (user == null) {
                 e.onError(new InvalidFirebaseUser("Current FireBase User is invalid."));
                 return;
             }
+
             FirebaseDatabase db = FirebaseDatabase.getInstance();
             DatabaseReference ref = db.getReference(RepoTableContracts.TABLE_SUMMARY_POSTS).child(user.getUid());
 
@@ -95,18 +102,19 @@ public class SummaryTableRef {
                 DatabaseReference keyRef = ref.push();
                 keyRef.setValue(dataSet).addOnCompleteListener(task -> e.onNext(keyRef));
             } catch (Exception ex) {
-                ex.printStackTrace();
                 e.onError(ex);
+                CrashReporter.getInstance().report(ex);
             }
         });
     }
 
     public Observable<Boolean> deleteClipItem(@NonNull String itemKey) {
         return Observable.create(e -> {
-            final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-            if (e.isDisposed()) {
+            if (!NetworkUtils.isInternetOn(MainApplication.getAppContext())) {
+                e.onError(new NetworkConException());
                 return;
             }
+            final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
             if (user == null) {
                 e.onError(new InvalidFirebaseUser("Current FireBase User is invalid."));
                 return;
@@ -122,10 +130,11 @@ public class SummaryTableRef {
 
     public Observable<ClipDomain> updateClipItemToRepository(@NonNull ClipDomain domain) {
         return Observable.create(e -> {
-            final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-            if (e.isDisposed()) {
+            if (!NetworkUtils.isInternetOn(MainApplication.getAppContext())) {
+                e.onError(new NetworkConException());
                 return;
             }
+            final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
             if (user == null) {
                 e.onError(new InvalidFirebaseUser("Current FireBase User is invalid."));
                 return;
@@ -166,15 +175,16 @@ public class SummaryTableRef {
 
     public Observable<Boolean> updateFavouritesItemState(@NonNull String itemKey, boolean isFavouritesItem) {
         return Observable.create(e -> {
-            final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-            if (e.isDisposed()) {
+            if (!NetworkUtils.isInternetOn(MainApplication.getAppContext())) {
+                e.onError(new NetworkConException());
                 return;
             }
-
+            final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
             if (user == null) {
                 e.onError(new InvalidFirebaseUser("Current FireBase User is invalid."));
                 return;
             }
+
             FirebaseDatabase db = FirebaseDatabase.getInstance();
             DatabaseReference ref =
                   db.getReference(RepoTableContracts.TABLE_SUMMARY_POSTS).child(user.getUid()).child(itemKey);
@@ -203,12 +213,13 @@ public class SummaryTableRef {
         });
     }
 
-    public Observable<Boolean> removeClipItems(@NonNull List<String> itemKeys) {
-        return Observable.create(e -> {
-            final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-            if (e.isDisposed()) {
+    public Single<Boolean> removeClipItems(@NonNull List<String> itemKeys) {
+        return Single.create(e -> {
+            if (!NetworkUtils.isInternetOn(MainApplication.getAppContext())) {
+                e.onError(new NetworkConException());
                 return;
             }
+            final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
             if (user == null) {
                 e.onError(new InvalidFirebaseUser("Current FireBase User is invalid."));
                 return;
@@ -225,7 +236,7 @@ public class SummaryTableRef {
                 if (databaseError != null) {
                     e.onError(new Throwable(databaseError.getMessage()));
                 } else {
-                    e.onNext(true);
+                    e.onSuccess(true);
                 }
             });
         });

@@ -57,7 +57,7 @@ android {
         applicationVariants.all { variant ->
             variant.outputs.each { output ->
                 output.outputFile = new File(output.outputFile.parent,
-                        output.outputFile.name.replace(".apk", "-${variant.versionName}.apk"))
+                    output.outputFile.name.replace(".apk", "-${variant.versionName}.apk"))
             }
         }
 
@@ -106,6 +106,7 @@ dependencies {
     compile googleDependencies.firebaseAuth
     compile googleDependencies.firebaseStorage
     compile googleDependencies.firebaseDatabase
+    compile googleDependencies.firebaseCrashReporter
 
     /**
      * Library

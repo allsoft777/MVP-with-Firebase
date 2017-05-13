@@ -1,14 +1,14 @@
-package com.seongil.mvplife.sample.common.firebase.reporter;
+package com.seongil.mvplife.sample.common.utils;
 
-import android.support.annotation.NonNull;
-
-import com.google.firebase.crash.FirebaseCrash;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 
 /**
  * @author seong-il, kim
- * @since 17. 4. 27
+ * @since 2017. 5. 12.
  */
-public class CrashReporter {
+public class NetworkUtils {
 
     // ========================================================================
     // constants
@@ -17,17 +17,10 @@ public class CrashReporter {
     // ========================================================================
     // fields
     // ========================================================================
-    private static CrashReporter sInstance;
 
     // ========================================================================
     // constructors
     // ========================================================================
-    public static synchronized CrashReporter getInstance() {
-        if (sInstance == null) {
-            sInstance = new CrashReporter();
-        }
-        return sInstance;
-    }
 
     // ========================================================================
     // getter & setter
@@ -40,8 +33,11 @@ public class CrashReporter {
     // ========================================================================
     // methods
     // ========================================================================
-    public void report(@NonNull Throwable t) {
-        FirebaseCrash.report(t);
+    public static boolean isInternetOn(Context context) {
+        ConnectivityManager connectivityManager
+              = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
     // ========================================================================

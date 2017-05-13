@@ -83,7 +83,7 @@ public class DetailClipItemPresenter extends RxMvpPresenter<DetailClipItemView> 
         Disposable disposable = DetailTableRef.getInstance().getDetailPostItemDatabaseRef(itemKey)
               .flatMap(this::addListenerForSingleValueEvent)
               .compose(RxTransformer.asyncObservableStream())
-              .subscribe();
+              .subscribe(___ -> {}, t -> getView().renderError(t));
         addDisposable(disposable);
     }
 

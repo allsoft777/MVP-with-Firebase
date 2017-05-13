@@ -119,6 +119,7 @@ public class ClipListFragment extends BaseFragment<ClipListView, ClipListPresent
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_search) {
+            // TODO
             return true;
         } else if (item.getItemId() == R.id.action_star) {
             handleClickedFavouritesItem(item);
@@ -129,7 +130,10 @@ public class ClipListFragment extends BaseFragment<ClipListView, ClipListPresent
 
     @Override
     public void renderError(@NonNull Throwable t) {
+        dismissProgressDialog();
         renderToastMsg(t.toString());
+        mClipListViewBinder.renderErrorView(t);
+        mInputContainerViewBinder.renderErrorView(t);
     }
 
     @Override

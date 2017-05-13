@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Observable;
+import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
@@ -83,11 +84,11 @@ public class ClipListPresenter extends RxMvpPresenter<ClipListView> {
 
     public void removeClipItemsFromRepository(@NonNull List<String> itemKeys) {
         getView().showProgressDialog(MainApplication.getRes().getString(R.string.msg_deleting));
-        Disposable disposable = Observable.zip(
+        Disposable disposable = Single.zip(
               SummaryTableRef.getInstance().removeClipItems(itemKeys),
               DetailTableRef.getInstance().removeClipItems(itemKeys),
               (result1, result2) -> result1 && result2)
-              .compose(RxTransformer.asyncObservableStream())
+              .compose(RxTransformer.asyncSingleStream())
               .subscribe(result -> getView().notifyRemovedItems(itemKeys), t -> getView().renderError(t));
         addDisposable(disposable);
     }
