@@ -164,6 +164,7 @@ public class LoginFragment extends BaseMvpFragmentV4<LoginView, LoginPresenter> 
 
     @Override
     public void renderSignedOutUser() {
+        hideProgressDialog();
         mSignInBtn.setVisibility(View.VISIBLE);
     }
 
@@ -174,13 +175,16 @@ public class LoginFragment extends BaseMvpFragmentV4<LoginView, LoginPresenter> 
 
     @Override
     public void onFirebaseAuthWithGoogleCompleted(Task<AuthResult> authResultTask) {
+        hideProgressDialog();
         Log.i(TAG, "onFirebaseAuthWithGoogleCompleted");
     }
 
     @Override
     public void onFirebaseAuthWithGoogleFailed(Throwable t) {
+        hideProgressDialog();
         if (t instanceof FirebaseNetworkException) { // explicit exception
             renderErrorMsg("Network Connection Error.");
+            return;
         }
         renderErrorMsg("onFirebaseAuthWithGoogleFailed : " + t.getMessage());
     }
@@ -193,6 +197,7 @@ public class LoginFragment extends BaseMvpFragmentV4<LoginView, LoginPresenter> 
     }
 
     private void signIn() {
+        showProgressDialog();
         Intent intent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
         startActivityForResult(intent, RC_SIGN_IN);
     }

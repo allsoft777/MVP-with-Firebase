@@ -6,12 +6,13 @@
     <string name="delete">Delete</string>
     <string name="detail_view">Detail view</string>
     <string name="edit_view">Edit view</string>
-    <string name="exit_confirm_dialog">Exit Confirmation</string>
     <string name="editing_mode">Editing mode.</string>
     <string name="reading_mode">Reading mode.</string>
     <string name="search">Search</string>
     <string name="favourites">Favourites</string>
+    <string name="share">Share</string>
 
+    <string name="msg_press_again_to_quit">Please touch one more time to exit the program.</string>
     <string name="msg_an_item_removed">item removed.</string>
     <string name="msg_multiple_items_removed">items removed.</string>
     <string name="msg_hint_make_notes">Make notes…</string>

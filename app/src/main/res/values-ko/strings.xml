@@ -1,0 +1,32 @@
+<resources>
+    <string name="app_name">클립 다이어리</string>
+    <string name="error">에러</string>
+    <string name="confirm">확인</string>
+    <string name="no">아니오o</string>
+    <string name="delete">삭제</string>
+    <string name="detail_view">상세 화면</string>
+    <string name="edit_view">편집 화면</string>
+    <string name="editing_mode">편집 모드</string>
+    <string name="reading_mode">읽기 모드</string>
+    <string name="search">검색</string>
+    <string name="favourites">즐겨찾기</string>
+    <string name="share">공유</string>
+
+    <string name="msg_press_again_to_quit">프로그램을 종료 하려면 한번 더 터치하세요.</string>
+    <string name="msg_an_item_removed">항목이 삭제되었습니다.</string>
+    <string name="msg_multiple_items_removed">항목들이 삭제되었습니다.</string>
+    <string name="msg_hint_make_notes">노트 작성…</string>
+    <string name="msg_inserting">생성 중…</string>
+    <string name="msg_deleting">삭제 중…</string>
+    <string name="msg_updating">수정사항 저장 중…</string>
+    <string name="msg_loading">불러오는 중…</string>
+    <string name="msg_copy_to_clipboard">클립보드에 복사하였습니다.</string>
+    <string name="msg_no_more_item">더이상 항목이 없습니다.</string>
+    <string name="msg_touch_to_add_item">항목을 추가하려면 여기를 터치하세요.</string>
+    <string name="msg_success_to_update_clip_item">클립 데이터가 성공적으로 업데이트 되었습니다.</string>
+    <string name="msg_remove_successfully">클립 데이터가 성공적으로 삭제되었습니다.</string>
+    <string name="msg_success_to_add_favourites_item">즐겨찾기를 하였습니다.</string>
+    <string name="msg_success_to_remove_favourites_item">즐겨찾기를 해제하였습니다.</string>
+
+    <string name="err_network_connection_failed">네트워크에 연결 할 수 없습니다.</string>
+</resources>

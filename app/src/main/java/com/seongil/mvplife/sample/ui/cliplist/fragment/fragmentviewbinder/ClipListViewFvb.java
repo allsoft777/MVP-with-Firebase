@@ -97,6 +97,10 @@ public class ClipListViewFvb extends RxMvpViewBinder {
         mErrorContainer = layout.findViewById(R.id.error_container);
         mErrorIcon = (ImageView) mErrorContainer.findViewById(R.id.error_icon);
         mErrorText = (TextView) mErrorContainer.findViewById(R.id.error_msg);
+        mErrorContainer.setOnClickListener(v -> {
+            renderLoadingView();
+            mFvbListener.fetchNextItemMoreFromRepository("");
+        });
 
         emptyIcon.setBackgroundResource(R.drawable.ic_in_group_add_item_guide);
         emptyText.setText(emptyText.getResources().getString(R.string.msg_touch_to_add_item));
@@ -112,6 +116,9 @@ public class ClipListViewFvb extends RxMvpViewBinder {
         mFvbListener = null;
         mAdapter = null;
         mListView = null;
+        mErrorContainer = null;
+        mErrorIcon = null;
+        mErrorText = null;
     }
 
     // ========================================================================
@@ -283,7 +290,7 @@ public class ClipListViewFvb extends RxMvpViewBinder {
         return INVALID_KEY_POSITION;
     }
 
-    public void renderListView() {
+    private void renderListView() {
         mErrorContainer.setVisibility(View.GONE);
         mListView.setVisibility(View.VISIBLE);
         mLoadingView.setVisibility(View.GONE);
@@ -316,9 +323,7 @@ public class ClipListViewFvb extends RxMvpViewBinder {
 
         if (t instanceof NetworkConException) {
             mErrorText.setText(mErrorText.getResources().getString(R.string.err_network_connection_failed));
-            mErrorIcon.setBackgroundResource(R.drawable.error_network_connection);
-        } else {
-            throw new IllegalArgumentException("Invalid exception code.");
+            mErrorIcon.setBackgroundResource(R.drawable.ic_err_network);
         }
     }
 
@@ -364,7 +369,7 @@ public class ClipListViewFvb extends RxMvpViewBinder {
         }
     }
 
-    public void updateViewModel(@NonNull ClipDomain domain) {
+    private void updateViewModel(@NonNull ClipDomain domain) {
         final int position = getPositionByKey(domain.getKey());
         if (position == INVALID_KEY_POSITION) {
             return;
@@ -391,6 +396,7 @@ public class ClipListViewFvb extends RxMvpViewBinder {
         return mAdapter.getSelectedItemCount();
     }
 
+    @NonNull
     public List<String> getSelectedItemKeys() {
         return mAdapter.retrieveSelectedItemKeys();
     }
@@ -412,6 +418,11 @@ public class ClipListViewFvb extends RxMvpViewBinder {
 
     public boolean isInitialLoadingState() {
         return mState == STATE_ENTIRE_LOADING_VIEW;
+    }
+
+    @NonNull
+    public List<ClipDomainViewModel> retrieveSelectedViewModel() {
+        return mAdapter.retrieveSelectedDomainItems();
     }
 
     // ========================================================================

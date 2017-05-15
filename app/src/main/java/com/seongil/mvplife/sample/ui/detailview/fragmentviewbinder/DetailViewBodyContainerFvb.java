@@ -10,6 +10,7 @@ import android.widget.ProgressBar;
 
 import com.seongil.mvplife.sample.R;
 import com.seongil.mvplife.sample.application.MainApplication;
+import com.seongil.mvplife.sample.common.exception.NetworkConException;
 import com.seongil.mvplife.sample.common.utils.ToastUtil;
 import com.seongil.mvplife.sample.domain.ClipDomain;
 import com.seongil.mvplife.sample.repository.common.RepoTableContracts;
@@ -159,6 +160,12 @@ public class DetailViewBodyContainerFvb extends RxMvpViewBinder {
         InputMethodManager imm =
               (InputMethodManager) MainApplication.getAppContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+    }
+
+    public void renderErrorView(Throwable t) {
+        if (t instanceof NetworkConException) {
+            renderEditView();
+        }
     }
 
     // ========================================================================

@@ -100,6 +100,7 @@ public class DetailClipItemFragment
     public void onDestroyView() {
         super.onDestroyView();
         mDetailViewBodyContainerFvb.onDestroyView();
+        mSoftButtonsViewBinder.onDestroyView();
     }
 
     @Override
@@ -117,6 +118,7 @@ public class DetailClipItemFragment
     @Override
     public void renderError(@NonNull Throwable t) {
         renderToastMsg(t.getMessage());
+        mDetailViewBodyContainerFvb.renderErrorView(t);
     }
 
     @Override
@@ -183,7 +185,8 @@ public class DetailClipItemFragment
 
         if (!mDetailViewBodyContainerFvb.isNewItemInsertionMode()) {
             ClipListViewSkyRail.getInstance().getSkyRail().send(
-                  new ClipListViewSkyRailEvents.UpdateFavouritesState(mDetailViewBodyContainerFvb.getItemKey(), isFavouritesItem));
+                  new ClipListViewSkyRailEvents.UpdateFavouritesState(mDetailViewBodyContainerFvb.getItemKey(),
+                        isFavouritesItem));
         }
         mDetailViewBodyContainerFvb.updateFavouritesState(isFavouritesItem);
         mSoftButtonsViewBinder.renderFavouritesItemState(isFavouritesItem);

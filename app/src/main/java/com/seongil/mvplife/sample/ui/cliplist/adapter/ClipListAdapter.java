@@ -81,6 +81,7 @@ public class ClipListAdapter extends RecyclerListViewAdapter<ClipDomainViewModel
         }
     }
 
+    @NonNull
     public List<String> retrieveSelectedItemKeys() {
         List<String> result = new ArrayList<>();
         for (ClipDomainViewModel model : getDataSet(false)) {
@@ -98,6 +99,17 @@ public class ClipListAdapter extends RecyclerListViewAdapter<ClipDomainViewModel
                 return;
             }
         }
+    }
+
+    @NonNull
+    public List<ClipDomainViewModel> retrieveSelectedDomainItems() {
+        List<ClipDomainViewModel> result = new ArrayList<>();
+        for (ClipDomainViewModel viewModel : getDataSet(false)) {
+            if (viewModel.isSelected()) {
+                result.add(viewModel);
+            }
+        }
+        return result;
     }
 
     // ========================================================================

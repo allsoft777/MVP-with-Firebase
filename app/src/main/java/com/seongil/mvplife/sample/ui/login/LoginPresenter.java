@@ -4,7 +4,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -59,46 +58,13 @@ public class LoginPresenter extends MvpBasePresenter<LoginView> {
 
     public void checkFirebaseAuthState(@NonNull FirebaseAuth auth) {
         getView().showProgressDialog();
-
         RxFirebaseAuth.getInstance()
               .authStateChanged(auth)
               .subscribeOn(Schedulers.io())
               .observeOn(AndroidSchedulers.mainThread())
               .filter(fireBaseAuth -> isViewAttached())
               .doOnNext(fireBaseAuth -> getView().hideProgressDialog())
-              .subscribe(
-                    this::handleSucceedAuth,
-                    t -> getView().renderErrorMsg(t.getMessage())
-              );
-    }
-
-    public void signOut(@NonNull FirebaseAuth firebaseAuth, @NonNull GoogleApiClient googleApiClient) {
-        getView().showProgressDialog();
-
-        RxFirebaseAuth.getInstance()
-              .signOut(firebaseAuth, googleApiClient)
-              .subscribeOn(Schedulers.io())
-              .observeOn(AndroidSchedulers.mainThread())
-              .filter(status -> isViewAttached())
-              .subscribe(status -> {
-                  getView().hideProgressDialog();
-                  getView().onGoogleSignOut(status);
-              });
-    }
-
-    public void revokeAccessFromGoogleApiClient(@NonNull FirebaseAuth firebaseAuth, @NonNull
-          GoogleApiClient googleApiClient) {
-        getView().showProgressDialog();
-
-        RxFirebaseAuth.getInstance()
-              .revokeAccessFromGoogleApiClient(firebaseAuth, googleApiClient)
-              .subscribeOn(Schedulers.io())
-              .observeOn(AndroidSchedulers.mainThread())
-              .filter(status -> isViewAttached())
-              .subscribe(status -> {
-                  getView().hideProgressDialog();
-                  getView().onGoogleSignOut(status);
-              });
+              .subscribe(this::handleSucceedAuth, t -> getView().renderErrorMsg(t.getMessage()));
     }
 
     public void firebaseAuthWithGoogle(@NonNull FirebaseAuth firebaseAuth, @NonNull GoogleSignInAccount account) {

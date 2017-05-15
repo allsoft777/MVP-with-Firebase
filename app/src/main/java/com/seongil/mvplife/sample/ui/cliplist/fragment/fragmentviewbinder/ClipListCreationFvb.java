@@ -7,6 +7,7 @@ import android.view.View;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.seongil.mvplife.sample.R;
 import com.seongil.mvplife.sample.application.MainApplication;
+import com.seongil.mvplife.sample.common.firebase.analytics.AnalyticsReporter;
 import com.seongil.mvplife.sample.ui.detailview.activity.DetailClipItemActivity;
 import com.seongil.mvplife.viewbinder.MvpViewBinder;
 
@@ -57,6 +58,7 @@ public class ClipListCreationFvb implements MvpViewBinder {
     // methods
     // ========================================================================
     private void launchEditView() {
+        AnalyticsReporter.createNewClipManually();
         Intent intent = new Intent(MainApplication.getAppContext(), DetailClipItemActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         MainApplication.getAppContext().startActivity(intent);
@@ -74,7 +76,7 @@ public class ClipListCreationFvb implements MvpViewBinder {
     }
 
     public void renderErrorView(@NonNull Throwable t) {
-        // Nothing
+        mContainerView.setVisibility(View.GONE);
     }
 
     // ========================================================================

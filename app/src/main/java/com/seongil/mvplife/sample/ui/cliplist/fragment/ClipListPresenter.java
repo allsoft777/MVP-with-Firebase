@@ -1,5 +1,7 @@
 package com.seongil.mvplife.sample.ui.cliplist.fragment;
 
+import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -12,7 +14,12 @@ import com.google.firebase.database.ValueEventListener;
 import com.seongil.mvplife.base.RxMvpPresenter;
 import com.seongil.mvplife.sample.R;
 import com.seongil.mvplife.sample.application.MainApplication;
+import com.seongil.mvplife.sample.common.exception.NetworkConException;
+import com.seongil.mvplife.sample.common.firebase.analytics.AnalyticsReporter;
+import com.seongil.mvplife.sample.common.share.ShareClipItemManager;
+import com.seongil.mvplife.sample.common.utils.NetworkUtils;
 import com.seongil.mvplife.sample.common.utils.RxTransformer;
+import com.seongil.mvplife.sample.common.utils.ToastUtil;
 import com.seongil.mvplife.sample.domain.ClipDomain;
 import com.seongil.mvplife.sample.repository.common.RepoTableContracts;
 import com.seongil.mvplife.sample.repository.detailpost.DetailTableRef;
@@ -27,9 +34,7 @@ import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.Single;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
 
 import static com.seongil.mvplife.sample.ui.cliplist.fragment.ClipListFragment.LOAD_CLIP_ITEM_PER_CYCLE;
 
@@ -63,13 +68,12 @@ public class ClipListPresenter extends RxMvpPresenter<ClipListView> {
     // methods
     // ========================================================================
     public void updateFavouritesItemToRepository(@NonNull String itemKey, final boolean isFavouritesItem) {
-        Disposable disposable = Observable.zip(
-              SummaryTableRef.getInstance()
-                    .updateFavouritesItemState(itemKey, isFavouritesItem).subscribeOn(Schedulers.io()),
-              DetailTableRef.getInstance()
-                    .updateFavouritesItemState(itemKey, isFavouritesItem).subscribeOn(Schedulers.io()),
+        Disposable disposable = Single.zip(
+              SummaryTableRef.getInstance().updateFavouritesItemState(itemKey, isFavouritesItem),
+              DetailTableRef.getInstance().updateFavouritesItemState(itemKey, isFavouritesItem),
               (result1, result2) -> result1 && result2)
-              .observeOn(AndroidSchedulers.mainThread()).subscribe(
+              .compose(RxTransformer.asyncSingleStream())
+              .subscribe(
                     result -> getView().notifyUpdatedFavouritesItem(itemKey, isFavouritesItem),
                     t -> getView().renderError(t)
               );
@@ -77,6 +81,11 @@ public class ClipListPresenter extends RxMvpPresenter<ClipListView> {
     }
 
     public void fetchClipListFromRepository(@Nullable String lastLoadedItemKey, final boolean filterFavouritesItem) {
+        if (!NetworkUtils.isInternetOn(MainApplication.getAppContext())) {
+            getView().renderError(new NetworkConException("Network is not connected."));
+            return;
+        }
+
         Disposable disposable = RxFirebaseUser.getInstance().getCurrentUser()
               .flatMap(user -> SummaryTableRef.getInstance().getSummaryPostsDatabaseRef(user))
               .flatMap(ref -> fetchDataFromRepository(ref, lastLoadedItemKey, filterFavouritesItem))
@@ -127,6 +136,7 @@ public class ClipListPresenter extends RxMvpPresenter<ClipListView> {
 
                       @Override
                       public void onCancelled(DatabaseError databaseError) {
+                          ToastUtil.showToast("error");
                       }
                   });
               }
@@ -181,6 +191,25 @@ public class ClipListPresenter extends RxMvpPresenter<ClipListView> {
         return list;
     }
 
+    public void shareItems(@NonNull List<ClipDomainViewModel> list) {
+        final ShareClipItemManager mgr = new ShareClipItemManager();
+        final String str = mgr.buildShareText(list);
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, str);
+        sendIntent.setType("text/plain");
+        sendIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        MainApplication.getAppContext().startActivity(sendIntent);
+        reportAnalyticsForSharingItems(list.size());
+    }
+
+    private void reportAnalyticsForSharingItems(int size) {
+        Bundle analyticsBundle = new Bundle();
+        analyticsBundle.putInt(AnalyticsReporter.Param.ITEM_CNT, size);
+        analyticsBundle.putString(AnalyticsReporter.Param.TRIGGER_VIEW, AnalyticsReporter.Param.LIST_VIEW);
+        AnalyticsReporter.shareClipItem(analyticsBundle);
+    }
+
     // ========================================================================
     // inner and anonymous classes
     // ========================================================================
@@ -189,7 +218,7 @@ public class ClipListPresenter extends RxMvpPresenter<ClipListView> {
 
         private DataSnapshot mDataSnapshot;
 
-        public ConvertDataSnapshotToDomainListOnSubscribe(DataSnapshot dataSnapshot) {
+        private ConvertDataSnapshotToDomainListOnSubscribe(DataSnapshot dataSnapshot) {
             mDataSnapshot = dataSnapshot;
         }
 

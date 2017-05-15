@@ -1,25 +1,19 @@
-package com.seongil.mvplife.sample.common.share;
+package com.seongil.mvplife.sample.common.firebase.analytics;
 
-import android.support.annotation.NonNull;
+import android.os.Bundle;
 
-import com.seongil.mvplife.sample.common.datetime.RxFormat;
-import com.seongil.mvplife.sample.viewmodel.ClipDomainViewModel;
-
-import java.text.SimpleDateFormat;
-import java.util.List;
-import java.util.Locale;
+import com.google.firebase.analytics.FirebaseAnalytics;
+import com.seongil.mvplife.sample.application.MainApplication;
 
 /**
  * @author seong-il, kim
- * @since 17. 5. 12
+ * @since 17. 5. 15
  */
-public class ShareClipItemManager {
+public class AnalyticsReporter {
 
     // ========================================================================
     // constants
     // ========================================================================
-    private static final SimpleDateFormat DATE_FORMAT =
-          new SimpleDateFormat("yyyy-MM-dd, HH:mm:ss", Locale.getDefault());
 
     // ========================================================================
     // fields
@@ -40,21 +34,26 @@ public class ShareClipItemManager {
     // ========================================================================
     // methods
     // ========================================================================
-    public String buildShareText(@NonNull List<ClipDomainViewModel> domainList) {
-        StringBuilder sb = new StringBuilder(1024);
-        final int size = domainList.size();
-        for (int i = 0; i < size; i++) {
-            if (i != 0) {
-                sb.append("\n\n");
-            }
-            sb.append(RxFormat.buildDateTimeString(
-                  DATE_FORMAT, domainList.get(i).getDomain().getCreatedAt())).append("\n");
-            sb.append(domainList.get(i).getDomain().getTextData());
-        }
-        return sb.toString();
+    private static FirebaseAnalytics getAnalytics() {
+        return FirebaseAnalytics.getInstance(MainApplication.getAppContext());
+    }
+
+    public static void createNewClipManually() {
+        getAnalytics().logEvent("cliplist_create_manually", new Bundle());
+    }
+
+    public static void shareClipItem(Bundle bundle) {
+        getAnalytics().logEvent("cliplist_share_item", bundle);
     }
 
     // ========================================================================
     // inner and anonymous classes
     // ========================================================================
+    public static class Param {
+
+        public static final String ITEM_CNT = "item_count";
+        public static final String TRIGGER_VIEW = "trigger_view";
+        public static final String LIST_VIEW = "list_view";
+        public static final String DETAIL_VIEW = "detail_view";
+    }
 }

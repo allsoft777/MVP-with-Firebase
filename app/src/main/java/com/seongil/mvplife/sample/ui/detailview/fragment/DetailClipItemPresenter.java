@@ -22,9 +22,7 @@ import com.seongil.mvplife.sample.ui.detailview.skyrail.DetailViewSkyRailEvents;
 
 import io.reactivex.Observable;
 import io.reactivex.Single;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
 
 /**
  * @author seong-il, kim
@@ -102,21 +100,22 @@ public class DetailClipItemPresenter extends RxMvpPresenter<DetailClipItemView> 
 
     public void updateClipDataToRepository(@NonNull Resources res, @NonNull ClipDomain domain) {
         getView().showProgressDialog(res.getString(R.string.msg_updating));
-        Disposable disposable = Observable.zip(
+        Disposable disposable = Single.zip(
               SummaryTableRef.getInstance().updateClipItemToRepository(domain),
               DetailTableRef.getInstance().updateClipItemToRepository(domain),
               (result1, result2) -> result2)
-              .compose(RxTransformer.asyncObservableStream())
+              .compose(RxTransformer.asyncSingleStream())
               .subscribe(result -> getView().notifyUpdatedClipItem(result), t -> getView().renderError(t));
         addDisposable(disposable);
     }
 
     public void updateFavouritesStateToRepository(@NonNull String key, final boolean favouritesItem) {
-        Disposable disposable = Observable.zip(
-              SummaryTableRef.getInstance().updateFavouritesItemState(key, favouritesItem).subscribeOn(Schedulers.io()),
-              DetailTableRef.getInstance().updateFavouritesItemState(key, favouritesItem).subscribeOn(Schedulers.io()),
+        Disposable disposable = Single.zip(
+              SummaryTableRef.getInstance().updateFavouritesItemState(key, favouritesItem),
+              DetailTableRef.getInstance().updateFavouritesItemState(key, favouritesItem),
               (result1, result2) -> result1 && result2)
-              .observeOn(AndroidSchedulers.mainThread()).subscribe(
+              .compose(RxTransformer.asyncSingleStream())
+              .subscribe(
                     result -> getView().notifyUpdatedFavoriteState(favouritesItem),
                     t -> getView().renderError(t)
               );

@@ -11,6 +11,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
+import com.seongil.mvplife.sample.R;
 import com.seongil.mvplife.sample.application.MainApplication;
 import com.seongil.mvplife.sample.common.exception.NetworkConException;
 import com.seongil.mvplife.sample.common.firebase.reporter.CrashReporter;
@@ -66,7 +67,8 @@ public class DetailTableRef {
     public Observable<DatabaseReference> getDetailPostItemDatabaseRef(@NonNull final String itemKey) {
         return Observable.create(e -> {
             if (!NetworkUtils.isInternetOn(MainApplication.getAppContext())) {
-                e.onError(new NetworkConException());
+                e.onError(new NetworkConException(
+                      MainApplication.getRes().getString(R.string.err_network_connection_failed)));
                 return;
             }
             final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -88,7 +90,8 @@ public class DetailTableRef {
     public Single<String> insertNewItemToRepository(String newItemKey, @NonNull ClipDomain domain) {
         return Single.create(e -> {
             if (!NetworkUtils.isInternetOn(MainApplication.getAppContext())) {
-                e.onError(new NetworkConException());
+                e.onError(new NetworkConException(
+                      MainApplication.getRes().getString(R.string.err_network_connection_failed)));
                 return;
             }
             final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -98,7 +101,8 @@ public class DetailTableRef {
             }
 
             FirebaseDatabase db = FirebaseDatabase.getInstance();
-            DatabaseReference ref = db.getReference(RepoTableContracts.TABLE_SUMMARY_POSTS).child(user.getUid()).child(newItemKey);
+            DatabaseReference ref =
+                  db.getReference(RepoTableContracts.TABLE_SUMMARY_POSTS).child(user.getUid()).child(newItemKey);
 
             try {
                 Map<String, Object> dataSet = new HashMap<>(4);
@@ -118,7 +122,8 @@ public class DetailTableRef {
     public Single<Boolean> deleteClipItem(@NonNull String itemKey) {
         return Single.create(e -> {
             if (!NetworkUtils.isInternetOn(MainApplication.getAppContext())) {
-                e.onError(new NetworkConException());
+                e.onError(new NetworkConException(
+                      MainApplication.getRes().getString(R.string.err_network_connection_failed)));
                 return;
             }
             final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -136,56 +141,39 @@ public class DetailTableRef {
         });
     }
 
-    public Observable<ClipDomain> updateClipItemToRepository(@NonNull ClipDomain domain) {
-        return Observable.create(e -> {
-            try {
-                if (!NetworkUtils.isInternetOn(MainApplication.getAppContext())) {
-                    e.onError(new NetworkConException());
-                    return;
-                }
-                final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                if (user == null) {
-                    e.onError(new InvalidFirebaseUser("Current FireBase User is invalid."));
-                    return;
-                }
-
-                FirebaseDatabase db = FirebaseDatabase.getInstance();
-                DatabaseReference ref =
-                      db.getReference(RepoTableContracts.TABLE_DETAIL_POST).child(user.getUid()).child(domain.getKey());
-                ref.runTransaction(new Transaction.Handler() {
-                    @Override
-                    public Transaction.Result doTransaction(MutableData mutableData) {
-                        Map<String, Object> dataSet = new HashMap<>(4);
-                        dataSet.put(RepoTableContracts.COL_CREATED_AT, domain.getCreatedAt());
-                        dataSet.put(RepoTableContracts.COL_DATA, domain.getTextData());
-                        dataSet.put(RepoTableContracts.COL_SOURCE, domain.getSource());
-                        dataSet.put(RepoTableContracts.COL_FAVORITE_ITEM, domain.isFavouritesItem());
-                        mutableData.setValue(dataSet);
-                        return Transaction.success(mutableData);
-                    }
-
-                    @Override
-                    public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
-                        ClipDomain domain = dataSnapshot.getValue(ClipDomain.class);
-                        if (databaseError != null) {
-                            e.onError(new Throwable(databaseError.getMessage()));
-                            return;
-                        }
-                        domain.setKey(dataSnapshot.getKey());
-                        e.onNext(domain);
-                    }
-                });
-            } catch (Exception ex) {
-                e.onError(ex);
-                CrashReporter.getInstance().report(ex);
+    public Single<ClipDomain> updateClipItemToRepository(@NonNull ClipDomain domain) {
+        return Single.create(e -> {
+            if (!NetworkUtils.isInternetOn(MainApplication.getAppContext())) {
+                e.onError(new NetworkConException(
+                      MainApplication.getRes().getString(R.string.err_network_connection_failed)));
+                return;
             }
+            final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            if (user == null) {
+                e.onError(new InvalidFirebaseUser("Current FireBase User is invalid."));
+                return;
+            }
+
+            FirebaseDatabase db = FirebaseDatabase.getInstance();
+            DatabaseReference ref =
+                  db.getReference(RepoTableContracts.TABLE_DETAIL_POST).child(user.getUid()).child(domain.getKey());
+
+            Map<String, Object> dataSet = new HashMap<>(4);
+            dataSet.put(RepoTableContracts.COL_CREATED_AT, domain.getCreatedAt());
+            dataSet.put(RepoTableContracts.COL_DATA, domain.getTextData());
+            dataSet.put(RepoTableContracts.COL_SOURCE, domain.getSource());
+            dataSet.put(RepoTableContracts.COL_FAVORITE_ITEM, domain.isFavouritesItem());
+            final Task<Void> task = ref.setValue(dataSet);
+            task.addOnCompleteListener(taskArgs -> e.onSuccess(domain));
+            task.addOnFailureListener(taskArgs -> e.onError(taskArgs.getCause()));
         });
     }
 
-    public Observable<Boolean> updateFavouritesItemState(@NonNull String itemKey, boolean isFavouritesItem) {
-        return Observable.create(e -> {
+    public Single<Boolean> updateFavouritesItemState(@NonNull String itemKey, boolean isFavouritesItem) {
+        return Single.create(e -> {
             if (!NetworkUtils.isInternetOn(MainApplication.getAppContext())) {
-                e.onError(new NetworkConException());
+                e.onError(new NetworkConException(
+                      MainApplication.getRes().getString(R.string.err_network_connection_failed)));
                 return;
             }
             final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -216,7 +204,7 @@ public class DetailTableRef {
                         e.onError(new Throwable(databaseError.getMessage()));
                         return;
                     }
-                    e.onNext(true);
+                    e.onSuccess(true);
                 }
             });
         });
@@ -225,7 +213,8 @@ public class DetailTableRef {
     public Single<Boolean> removeClipItems(@NonNull List<String> itemKeys) {
         return Single.create(e -> {
             if (!NetworkUtils.isInternetOn(MainApplication.getAppContext())) {
-                e.onError(new NetworkConException("kk"));
+                e.onError(new NetworkConException(
+                      MainApplication.getRes().getString(R.string.err_network_connection_failed)));
                 return;
             }
             final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();

@@ -1,11 +1,13 @@
 package com.seongil.mvplife.sample.ui.cliplist.activity;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.Toolbar;
 
 import com.seongil.mvplife.sample.R;
+import com.seongil.mvplife.sample.common.utils.ToastUtil;
 import com.seongil.mvplife.sample.ui.base.BaseActivity;
 import com.seongil.mvplife.sample.ui.cliplist.fragment.ClipListFragment;
 
@@ -22,6 +24,7 @@ public class ClipItemListActivity extends BaseActivity {
     // ========================================================================
     // fields
     // ========================================================================
+    private boolean mBackBtnPressed;
 
     // ========================================================================
     // constructors
@@ -42,6 +45,17 @@ public class ClipItemListActivity extends BaseActivity {
             configureActionBar();
             attachFragment();
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (!mBackBtnPressed) {
+            mBackBtnPressed = true;
+            ToastUtil.showToast(getString(R.string.msg_press_again_to_quit));
+            new Handler().postDelayed(() -> mBackBtnPressed = false, 1000);
+            return;
+        }
+        super.onBackPressed();
     }
 
     // ========================================================================

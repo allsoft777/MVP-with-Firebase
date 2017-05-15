@@ -132,7 +132,7 @@ public class ClipListFragment extends BaseFragment<ClipListView, ClipListPresent
     @Override
     public void renderError(@NonNull Throwable t) {
         dismissProgressDialog();
-        renderToastMsg(t.toString());
+        renderToastMsg(t.getMessage());
         mClipListViewBinder.renderErrorView(t);
         mClipListMenuContainerFvb.renderErrorView(t);
     }
@@ -185,7 +185,7 @@ public class ClipListFragment extends BaseFragment<ClipListView, ClipListPresent
         if (mActionMode == null) {
             return;
         }
-        mActionMode.setTitle(count);
+        mActionMode.setTitle(String.valueOf(count));
         mActionMode.invalidate();
     }
 
@@ -245,6 +245,11 @@ public class ClipListFragment extends BaseFragment<ClipListView, ClipListPresent
         getPresenter().fetchClipListFromRepository("", favouritesItemFilterMode);
     }
 
+    private void shareSelectedItems() {
+        getPresenter().shareItems(mClipListViewBinder.retrieveSelectedViewModel());
+        mActionMode.finish();
+    }
+
     // ========================================================================
     // inner and anonymous classes
     // ========================================================================
@@ -260,7 +265,7 @@ public class ClipListFragment extends BaseFragment<ClipListView, ClipListPresent
         @Override
         public boolean onPrepareActionMode(android.view.ActionMode mode, Menu menu) {
             final int count = mClipListViewBinder.getSelectedItemCount();
-            mActionMode.setTitle(count);
+            mActionMode.setTitle(String.valueOf(count));
             MenuItem done = menu.findItem(R.id.action_delete);
             done.setEnabled(count > 0);
             return false;
@@ -271,6 +276,9 @@ public class ClipListFragment extends BaseFragment<ClipListView, ClipListPresent
             switch (item.getItemId()) {
                 case R.id.action_delete:
                     removeSelectedItems();
+                    return true;
+                case R.id.action_share:
+                    shareSelectedItems();
                     return true;
                 default:
                     break;
