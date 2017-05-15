@@ -85,57 +85,8 @@ public class DetailTableRef {
         });
     }
 
-    public Observable<ClipDomain> insertNewItemToRepository(
-          @NonNull DatabaseReference summaryItemKeyRef, @NonNull ClipDomain domain) {
-        return Observable.create(e -> {
-            try {
-                if (!NetworkUtils.isInternetOn(MainApplication.getAppContext())) {
-                    e.onError(new NetworkConException());
-                    return;
-                }
-                final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                if (user == null) {
-                    e.onError(new InvalidFirebaseUser("Current FireBase User is invalid."));
-                    return;
-                }
-
-                final String summaryItemKey = summaryItemKeyRef.getKey();
-                FirebaseDatabase db = FirebaseDatabase.getInstance();
-                DatabaseReference ref =
-                      db.getReference(RepoTableContracts.TABLE_DETAIL_POST).child(user.getUid()).child(summaryItemKey);
-                ref.runTransaction(new Transaction.Handler() {
-
-                    @Override
-                    public Transaction.Result doTransaction(MutableData mutableData) {
-                        Map<String, Object> dataSet = new HashMap<>(4);
-                        dataSet.put(RepoTableContracts.COL_CREATED_AT, domain.getCreatedAt());
-                        dataSet.put(RepoTableContracts.COL_DATA, domain.getTextData());
-                        dataSet.put(RepoTableContracts.COL_SOURCE, domain.getSource());
-                        dataSet.put(RepoTableContracts.COL_FAVORITE_ITEM, domain.isFavouritesItem());
-                        mutableData.setValue(dataSet);
-                        return Transaction.success(mutableData);
-                    }
-
-                    @Override
-                    public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
-                        ClipDomain domain = dataSnapshot.getValue(ClipDomain.class);
-                        if (databaseError != null) {
-                            e.onError(new Throwable(databaseError.getMessage()));
-                            return;
-                        }
-                        domain.setKey(dataSnapshot.getKey());
-                        e.onNext(domain);
-                    }
-                });
-            } catch (Exception ex) {
-                CrashReporter.getInstance().report(ex);
-                e.onError(ex);
-            }
-        });
-    }
-
-    public Observable<Boolean> deleteClipItem(@NonNull String itemKey) {
-        return Observable.create(e -> {
+    public Single<String> insertNewItemToRepository(String newItemKey, @NonNull ClipDomain domain) {
+        return Single.create(e -> {
             if (!NetworkUtils.isInternetOn(MainApplication.getAppContext())) {
                 e.onError(new NetworkConException());
                 return;
@@ -147,10 +98,40 @@ public class DetailTableRef {
             }
 
             FirebaseDatabase db = FirebaseDatabase.getInstance();
-            DatabaseReference ref =
+            DatabaseReference ref = db.getReference(RepoTableContracts.TABLE_SUMMARY_POSTS).child(user.getUid()).child(newItemKey);
+
+            try {
+                Map<String, Object> dataSet = new HashMap<>(4);
+                dataSet.put(RepoTableContracts.COL_CREATED_AT, domain.getCreatedAt());
+                dataSet.put(RepoTableContracts.COL_DATA, domain.getTextData());
+                dataSet.put(RepoTableContracts.COL_SOURCE, domain.getSource());
+                dataSet.put(RepoTableContracts.COL_FAVORITE_ITEM, domain.isFavouritesItem());
+
+                ref.setValue(dataSet).addOnCompleteListener(task -> e.onSuccess(newItemKey));
+            } catch (Exception ex) {
+                e.onError(ex);
+                CrashReporter.getInstance().report(ex);
+            }
+        });
+    }
+
+    public Single<Boolean> deleteClipItem(@NonNull String itemKey) {
+        return Single.create(e -> {
+            if (!NetworkUtils.isInternetOn(MainApplication.getAppContext())) {
+                e.onError(new NetworkConException());
+                return;
+            }
+            final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            if (user == null) {
+                e.onError(new InvalidFirebaseUser("Current FireBase User is invalid."));
+                return;
+            }
+
+            final FirebaseDatabase db = FirebaseDatabase.getInstance();
+            final DatabaseReference ref =
                   db.getReference(RepoTableContracts.TABLE_DETAIL_POST).child(user.getUid()).child(itemKey);
-            Task<Void> task = ref.removeValue();
-            task.addOnCompleteListener(taskArgs -> e.onNext(true));
+            final Task<Void> task = ref.removeValue();
+            task.addOnCompleteListener(taskArgs -> e.onSuccess(true));
             task.addOnFailureListener(taskArgs -> e.onError(taskArgs.getCause()));
         });
     }

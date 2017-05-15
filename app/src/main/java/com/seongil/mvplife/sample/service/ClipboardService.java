@@ -10,10 +10,10 @@ import android.text.TextUtils;
 
 import com.seongil.mvplife.sample.common.utils.LogUtil;
 import com.seongil.mvplife.sample.domain.ClipDomain;
+import com.seongil.mvplife.sample.repository.clip.RxFirebaseClipItem;
 import com.seongil.mvplife.sample.repository.common.RepoTableContracts;
 import com.seongil.mvplife.sample.repository.detailpost.DetailTableRef;
 import com.seongil.mvplife.sample.repository.summarypost.SummaryTableRef;
-import com.seongil.mvplife.sample.repository.user.RxFirebaseUser;
 import com.seongil.mvplife.sample.ui.cliplist.skyrail.ClipListViewSkyRail;
 import com.seongil.mvplife.sample.ui.cliplist.skyrail.SkyRailClipListEvent;
 
@@ -108,11 +108,13 @@ public class ClipboardService extends Service {
     }
 
     public void insertNewClipItemToRepository(@NonNull ClipDomain domain) {
-        RxFirebaseUser.getInstance().getCurrentUser()
-              .flatMap(user -> SummaryTableRef.getInstance().insertNewItemToRepository(domain))
-              .flatMap(summaryRefKey -> DetailTableRef.getInstance().insertNewItemToRepository(summaryRefKey, domain))
-              .subscribe(result -> ClipListViewSkyRail.getInstance().getSkyRail()
-                    .send(new SkyRailClipListEvent.InsertedNewItem(result)));
+        RxFirebaseClipItem.getInstance().genNewKey()
+              .flatMap(newItemKey -> SummaryTableRef.getInstance().insertNewItemToRepository(newItemKey, domain))
+              .flatMap(newItemKey -> DetailTableRef.getInstance().insertNewItemToRepository(newItemKey, domain))
+              .subscribe(newItemKey -> {
+                  domain.setKey(newItemKey);
+                  ClipListViewSkyRail.getInstance().getSkyRail().send(new SkyRailClipListEvent.InsertedNewItem(domain));
+              });
     }
 
     // ========================================================================

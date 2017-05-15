@@ -14,13 +14,14 @@ import com.seongil.mvplife.sample.application.MainApplication;
 import com.seongil.mvplife.sample.common.firebase.reporter.CrashReporter;
 import com.seongil.mvplife.sample.common.utils.RxTransformer;
 import com.seongil.mvplife.sample.domain.ClipDomain;
+import com.seongil.mvplife.sample.repository.clip.RxFirebaseClipItem;
 import com.seongil.mvplife.sample.repository.detailpost.DetailTableRef;
 import com.seongil.mvplife.sample.repository.summarypost.SummaryTableRef;
-import com.seongil.mvplife.sample.repository.user.RxFirebaseUser;
 import com.seongil.mvplife.sample.ui.detailview.skyrail.DetailViewSkyRail;
 import com.seongil.mvplife.sample.ui.detailview.skyrail.SkyRailClipItemDetailViewEvent;
 
 import io.reactivex.Observable;
+import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
@@ -70,11 +71,11 @@ public class DetailClipItemPresenter extends RxMvpPresenter<DetailClipItemView> 
 
     public void deleteClipItem(@NonNull Resources res, @NonNull String itemKey) {
         getView().showProgressDialog(res.getString(R.string.msg_deleting));
-        Disposable disposable = Observable.zip(
-              SummaryTableRef.getInstance().deleteClipItem(itemKey).subscribeOn(Schedulers.io()),
-              DetailTableRef.getInstance().deleteClipItem(itemKey).subscribeOn(Schedulers.io()),
+        Disposable disposable = Single.zip(
+              SummaryTableRef.getInstance().deleteClipItem(itemKey),
+              DetailTableRef.getInstance().deleteClipItem(itemKey),
               (result1, result2) -> result1 && result2)
-              .observeOn(AndroidSchedulers.mainThread())
+              .compose(RxTransformer.asyncSingleStream())
               .subscribe(result -> getView().notifyRemovedItem(itemKey), t -> getView().renderError(t));
         addDisposable(disposable);
     }
@@ -89,20 +90,23 @@ public class DetailClipItemPresenter extends RxMvpPresenter<DetailClipItemView> 
 
     public void insertNewItemToRepository(@NonNull Resources res, @NonNull ClipDomain domain) {
         getView().showProgressDialog(res.getString(R.string.msg_inserting));
-        RxFirebaseUser.getInstance().getCurrentUser()
-              .flatMap(user -> SummaryTableRef.getInstance().insertNewItemToRepository(domain))
-              .flatMap(summaryRefKey -> DetailTableRef.getInstance().insertNewItemToRepository(summaryRefKey, domain))
-              .compose(RxTransformer.asyncObservableStream())
-              .subscribe(result -> getView().notifyInsertionSuccess(result), t -> getView().renderError(t));
+        RxFirebaseClipItem.getInstance().genNewKey()
+              .flatMap(newKey -> SummaryTableRef.getInstance().insertNewItemToRepository(newKey, domain))
+              .flatMap(newKey -> DetailTableRef.getInstance().insertNewItemToRepository(newKey, domain))
+              .compose(RxTransformer.asyncSingleStream())
+              .subscribe(itemKey -> {
+                  domain.setKey(itemKey);
+                  getView().notifyInsertionSuccess(domain);
+              }, t -> getView().renderError(t));
     }
 
     public void updateClipDataToRepository(@NonNull Resources res, @NonNull ClipDomain domain) {
         getView().showProgressDialog(res.getString(R.string.msg_updating));
         Disposable disposable = Observable.zip(
-              SummaryTableRef.getInstance().updateClipItemToRepository(domain).subscribeOn(Schedulers.io()),
-              DetailTableRef.getInstance().updateClipItemToRepository(domain).subscribeOn(Schedulers.io()),
+              SummaryTableRef.getInstance().updateClipItemToRepository(domain),
+              DetailTableRef.getInstance().updateClipItemToRepository(domain),
               (result1, result2) -> result2)
-              .observeOn(AndroidSchedulers.mainThread())
+              .compose(RxTransformer.asyncObservableStream())
               .subscribe(result -> getView().notifyUpdatedClipItem(result), t -> getView().renderError(t));
         addDisposable(disposable);
     }

@@ -77,8 +77,8 @@ public class SummaryTableRef {
         });
     }
 
-    public Observable<DatabaseReference> insertNewItemToRepository(@NonNull ClipDomain domain) {
-        return Observable.create(e -> {
+    public Single<String> insertNewItemToRepository(String newItemKey, @NonNull ClipDomain domain) {
+        return Single.create(e -> {
             if (!NetworkUtils.isInternetOn(MainApplication.getAppContext())) {
                 e.onError(new NetworkConException());
                 return;
@@ -90,7 +90,7 @@ public class SummaryTableRef {
             }
 
             FirebaseDatabase db = FirebaseDatabase.getInstance();
-            DatabaseReference ref = db.getReference(RepoTableContracts.TABLE_SUMMARY_POSTS).child(user.getUid());
+            DatabaseReference ref = db.getReference(RepoTableContracts.TABLE_SUMMARY_POSTS).child(user.getUid()).child(newItemKey);
 
             try {
                 Map<String, Object> dataSet = new HashMap<>(4);
@@ -99,8 +99,7 @@ public class SummaryTableRef {
                 dataSet.put(RepoTableContracts.COL_SOURCE, domain.getSource());
                 dataSet.put(RepoTableContracts.COL_FAVORITE_ITEM, domain.isFavouritesItem());
 
-                DatabaseReference keyRef = ref.push();
-                keyRef.setValue(dataSet).addOnCompleteListener(task -> e.onNext(keyRef));
+                ref.setValue(dataSet).addOnCompleteListener(task -> e.onSuccess(newItemKey));
             } catch (Exception ex) {
                 e.onError(ex);
                 CrashReporter.getInstance().report(ex);
@@ -108,8 +107,8 @@ public class SummaryTableRef {
         });
     }
 
-    public Observable<Boolean> deleteClipItem(@NonNull String itemKey) {
-        return Observable.create(e -> {
+    public Single<Boolean> deleteClipItem(@NonNull String itemKey) {
+        return Single.create(e -> {
             if (!NetworkUtils.isInternetOn(MainApplication.getAppContext())) {
                 e.onError(new NetworkConException());
                 return;
@@ -123,7 +122,7 @@ public class SummaryTableRef {
             DatabaseReference ref =
                   db.getReference(RepoTableContracts.TABLE_SUMMARY_POSTS).child(user.getUid()).child(itemKey);
             Task<Void> task = ref.removeValue();
-            task.addOnCompleteListener(taskArgs -> e.onNext(true));
+            task.addOnCompleteListener(taskArgs -> e.onSuccess(true));
             task.addOnFailureListener(taskArgs -> e.onError(taskArgs.getCause()));
         });
     }
