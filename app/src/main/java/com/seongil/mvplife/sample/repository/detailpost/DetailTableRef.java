@@ -102,7 +102,7 @@ public class DetailTableRef {
 
             FirebaseDatabase db = FirebaseDatabase.getInstance();
             DatabaseReference ref =
-                  db.getReference(RepoTableContracts.TABLE_SUMMARY_POSTS).child(user.getUid()).child(newItemKey);
+                  db.getReference(RepoTableContracts.TABLE_DETAIL_POST).child(user.getUid()).child(newItemKey);
 
             try {
                 Map<String, Object> dataSet = new HashMap<>(4);

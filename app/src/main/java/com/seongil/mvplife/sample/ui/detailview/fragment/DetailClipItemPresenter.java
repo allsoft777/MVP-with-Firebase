@@ -144,7 +144,7 @@ public class DetailClipItemPresenter extends RxMvpPresenter<DetailClipItemView> 
                     domain.setKey(dataSnapshot.getKey());
                     getView().renderClipDomain(domain);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    getView().renderError(e);
                     CrashReporter.getInstance().report(e);
                 }
             }
