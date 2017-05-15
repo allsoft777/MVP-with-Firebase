@@ -8,7 +8,7 @@ import com.seongil.mvplife.sample.domain.ClipDomain;
  * @author seong-il, kim
  * @since 2017. 4. 30.
  */
-public class SkyRailClipListEvent {
+public class ClipListViewSkyRailEvents {
 
     public static class FavoriteItemEvent {
 

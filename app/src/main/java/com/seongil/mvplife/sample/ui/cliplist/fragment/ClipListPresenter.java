@@ -18,11 +18,14 @@ import com.seongil.mvplife.sample.repository.common.RepoTableContracts;
 import com.seongil.mvplife.sample.repository.detailpost.DetailTableRef;
 import com.seongil.mvplife.sample.repository.summarypost.SummaryTableRef;
 import com.seongil.mvplife.sample.repository.user.RxFirebaseUser;
+import com.seongil.mvplife.sample.viewmodel.ClipDomainViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -158,21 +161,46 @@ public class ClipListPresenter extends RxMvpPresenter<ClipListView> {
     }
 
     private void handleReceivedDataSnapshot(DataSnapshot dataSnapshot) {
-        ClipDomain element;
-        List<ClipDomain> list = new ArrayList<>();
-        for (DataSnapshot item : dataSnapshot.getChildren()) {
-            element = item.getValue(ClipDomain.class);
-            element.setKey(item.getKey());
-            list.add(0, element);
-        }
-        getView().renderClipDataList(list, list.size() == LOAD_CLIP_ITEM_PER_CYCLE);
+        Observable.create(new ConvertDataSnapshotToDomainListOnSubscribe(dataSnapshot))
+              .compose(RxTransformer.asyncObservableStream())
+              .subscribe(list -> getView().renderClipDataList(list, list.size() == LOAD_CLIP_ITEM_PER_CYCLE));
     }
 
     private Query filterFavouritesItem(Query query) {
         return query.orderByChild(RepoTableContracts.COL_FAVORITE_ITEM).equalTo(true);
     }
 
+    private List<ClipDomainViewModel> convertDataSnapshotToDomainViewModel(DataSnapshot dataSnapshot) {
+        ClipDomain element;
+        List<ClipDomainViewModel> list = new ArrayList<>();
+        for (DataSnapshot item : dataSnapshot.getChildren()) {
+            element = item.getValue(ClipDomain.class);
+            element.setKey(item.getKey());
+            list.add(0, new ClipDomainViewModel(element));
+        }
+        return list;
+    }
+
     // ========================================================================
     // inner and anonymous classes
     // ========================================================================
+    private class ConvertDataSnapshotToDomainListOnSubscribe
+          implements ObservableOnSubscribe<List<ClipDomainViewModel>> {
+
+        private DataSnapshot mDataSnapshot;
+
+        public ConvertDataSnapshotToDomainListOnSubscribe(DataSnapshot dataSnapshot) {
+            mDataSnapshot = dataSnapshot;
+        }
+
+        @Override
+        public void subscribe(ObservableEmitter<List<ClipDomainViewModel>> e) throws Exception {
+            try {
+                List<ClipDomainViewModel> list = convertDataSnapshotToDomainViewModel(mDataSnapshot);
+                e.onNext(list);
+            } catch (Exception ex) {
+                e.onError(ex);
+            }
+        }
+    }
 }

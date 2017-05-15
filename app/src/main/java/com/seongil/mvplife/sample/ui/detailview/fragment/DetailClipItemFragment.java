@@ -17,10 +17,10 @@ import com.seongil.mvplife.sample.common.utils.LogUtil;
 import com.seongil.mvplife.sample.domain.ClipDomain;
 import com.seongil.mvplife.sample.ui.base.BaseFragment;
 import com.seongil.mvplife.sample.ui.cliplist.skyrail.ClipListViewSkyRail;
-import com.seongil.mvplife.sample.ui.cliplist.skyrail.SkyRailClipListEvent;
-import com.seongil.mvplife.sample.ui.detailview.viewbinder.EditBodyViewBinder;
-import com.seongil.mvplife.sample.ui.detailview.viewbinder.EditClipItemFragmentViewBinderListener;
-import com.seongil.mvplife.sample.ui.detailview.viewbinder.EditSoftButtonsViewBinder;
+import com.seongil.mvplife.sample.ui.cliplist.skyrail.ClipListViewSkyRailEvents;
+import com.seongil.mvplife.sample.ui.detailview.fragmentviewbinder.DetailViewBodyContainerFvb;
+import com.seongil.mvplife.sample.ui.detailview.fragmentviewbinder.DetailViewFvbListener;
+import com.seongil.mvplife.sample.ui.detailview.fragmentviewbinder.DetailViewMenuContainerFvb;
 
 /**
  * @author seong-il, kim
@@ -28,7 +28,7 @@ import com.seongil.mvplife.sample.ui.detailview.viewbinder.EditSoftButtonsViewBi
  */
 public class DetailClipItemFragment
       extends BaseFragment<DetailClipItemView, DetailClipItemPresenter> implements DetailClipItemView,
-      EditClipItemFragmentViewBinderListener {
+      DetailViewFvbListener {
 
     // ========================================================================
     // constants
@@ -38,8 +38,8 @@ public class DetailClipItemFragment
     // ========================================================================
     // fields
     // ========================================================================
-    private EditBodyViewBinder mEditBodyViewBinder;
-    private EditSoftButtonsViewBinder mSoftButtonsViewBinder;
+    private DetailViewBodyContainerFvb mDetailViewBodyContainerFvb;
+    private DetailViewMenuContainerFvb mSoftButtonsViewBinder;
 
     // ========================================================================
     // constructors
@@ -79,18 +79,18 @@ public class DetailClipItemFragment
         super.onViewCreated(view, savedInstanceState);
         getPresenter().registerRxSkyRail();
 
-        mEditBodyViewBinder = new EditBodyViewBinder();
-        mSoftButtonsViewBinder = new EditSoftButtonsViewBinder(this);
+        mDetailViewBodyContainerFvb = new DetailViewBodyContainerFvb();
+        mSoftButtonsViewBinder = new DetailViewMenuContainerFvb(this);
 
-        mEditBodyViewBinder.initializeLayout(view.findViewById(R.id.content_container));
+        mDetailViewBodyContainerFvb.initializeLayout(view.findViewById(R.id.content_container));
         mSoftButtonsViewBinder.initializeLayout(view.findViewById(R.id.soft_menu_container));
 
         final String clipItemKey = retrieveClipItemKeyFromArgument(getArguments());
         if (TextUtils.isEmpty(clipItemKey)) {
-            mEditBodyViewBinder.renderEditMode();
+            mDetailViewBodyContainerFvb.renderEditMode();
             getActionBar().setTitle(getString(R.string.edit_view));
         } else {
-            mEditBodyViewBinder.renderLoadingView();
+            mDetailViewBodyContainerFvb.renderLoadingView();
             getActionBar().setTitle(getString(R.string.detail_view));
             getPresenter().fetchClipDataFromRepository(getResources(), clipItemKey);
         }
@@ -99,18 +99,18 @@ public class DetailClipItemFragment
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        mEditBodyViewBinder.onDestroyView();
+        mDetailViewBodyContainerFvb.onDestroyView();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        mEditBodyViewBinder.hideSoftInput();
+        mDetailViewBodyContainerFvb.hideSoftInput();
     }
 
     @Override
     public void renderClipDomain(@NonNull ClipDomain domain) {
-        mEditBodyViewBinder.renderClipItemDomain(domain);
+        mDetailViewBodyContainerFvb.renderClipItemDomain(domain);
         mSoftButtonsViewBinder.renderFavouritesItemState(domain.isFavouritesItem());
     }
 
@@ -121,56 +121,56 @@ public class DetailClipItemFragment
 
     @Override
     public void notifyRemovedItem(@NonNull String itemKey) {
-        ClipListViewSkyRail.getInstance().getSkyRail().send(new SkyRailClipListEvent.DeletedItem(itemKey));
+        ClipListViewSkyRail.getInstance().getSkyRail().send(new ClipListViewSkyRailEvents.DeletedItem(itemKey));
         renderToastMsg(getString(R.string.msg_remove_successfully));
         getActivity().finish();
     }
 
     @Override
     public void deleteClipItem() {
-        final String key = mEditBodyViewBinder.getItemKey();
+        final String key = mDetailViewBodyContainerFvb.getItemKey();
         getPresenter().deleteClipItem(getResources(), key);
     }
 
     @Override
     public void toggleFavoriteItem() {
-        final boolean isFavouritesItem = mEditBodyViewBinder.isFavouritesItem();
+        final boolean isFavouritesItem = mDetailViewBodyContainerFvb.isFavouritesItem();
         final boolean updatedState = !isFavouritesItem;
-        if (mEditBodyViewBinder.isNewItemInsertionMode()) {
-            mEditBodyViewBinder.updateFavouritesState(updatedState);
+        if (mDetailViewBodyContainerFvb.isNewItemInsertionMode()) {
+            mDetailViewBodyContainerFvb.updateFavouritesState(updatedState);
             mSoftButtonsViewBinder.renderFavouritesItemState(updatedState);
             return;
         }
-        final String itemKey = mEditBodyViewBinder.getItemKey();
+        final String itemKey = mDetailViewBodyContainerFvb.getItemKey();
         getPresenter().updateFavouritesStateToRepository(itemKey, updatedState);
     }
 
     @Override
     public void shareClipItem() {
-        final ClipDomain domain = mEditBodyViewBinder.getOriginalDomain();
+        final ClipDomain domain = mDetailViewBodyContainerFvb.getOriginalDomain();
         getPresenter().shareClipItem(domain);
     }
 
     @Override
     public void copyClipItem() {
-        if (!mEditBodyViewBinder.isNewItemInsertionMode()) {
+        if (!mDetailViewBodyContainerFvb.isNewItemInsertionMode()) {
             ClipListViewSkyRail.getInstance().getSkyRail().send(
-                  new SkyRailClipListEvent.DeletedItem(mEditBodyViewBinder.getItemKey()));
+                  new ClipListViewSkyRailEvents.DeletedItem(mDetailViewBodyContainerFvb.getItemKey()));
         }
-        ClipboardManagerUtil.copyText(mEditBodyViewBinder.getDomainWithInputData().getTextData());
+        ClipboardManagerUtil.copyText(mDetailViewBodyContainerFvb.getDomainWithInputData().getTextData());
         finishActivity(true);
     }
 
     @Override
     public void setEditMode() {
         getActionBar().setTitle(getString(R.string.edit_view));
-        mEditBodyViewBinder.renderEditMode();
+        mDetailViewBodyContainerFvb.renderEditMode();
     }
 
     @Override
     public void setReadOnlyMode() {
         getActionBar().setTitle(getString(R.string.detail_view));
-        mEditBodyViewBinder.renderReadOnlyMode();
+        mDetailViewBodyContainerFvb.renderReadOnlyMode();
     }
 
     @Override
@@ -181,11 +181,11 @@ public class DetailClipItemFragment
             renderToastMsg(getString(R.string.msg_success_to_remove_favourites_item));
         }
 
-        if (!mEditBodyViewBinder.isNewItemInsertionMode()) {
+        if (!mDetailViewBodyContainerFvb.isNewItemInsertionMode()) {
             ClipListViewSkyRail.getInstance().getSkyRail().send(
-                  new SkyRailClipListEvent.UpdateFavouritesState(mEditBodyViewBinder.getItemKey(), isFavouritesItem));
+                  new ClipListViewSkyRailEvents.UpdateFavouritesState(mDetailViewBodyContainerFvb.getItemKey(), isFavouritesItem));
         }
-        mEditBodyViewBinder.updateFavouritesState(isFavouritesItem);
+        mDetailViewBodyContainerFvb.updateFavouritesState(isFavouritesItem);
         mSoftButtonsViewBinder.renderFavouritesItemState(isFavouritesItem);
 
         final boolean isFavouritesFilterOn = DefaultSharedPrefWrapper.getInstance().getBoolean(
@@ -197,7 +197,7 @@ public class DetailClipItemFragment
 
     @Override
     public void notifyUpdatedClipItem(@NonNull final ClipDomain domain) {
-        ClipListViewSkyRail.getInstance().getSkyRail().send(new SkyRailClipListEvent.UpdatedItem(domain));
+        ClipListViewSkyRail.getInstance().getSkyRail().send(new ClipListViewSkyRailEvents.UpdatedItem(domain));
         renderToastMsg(getString(R.string.msg_success_to_update_clip_item));
         finishActivity(true);
     }
@@ -208,7 +208,7 @@ public class DetailClipItemFragment
             getActivity().finish();
             return;
         }
-        if (mEditBodyViewBinder.isNewItemInsertionMode()) {
+        if (mDetailViewBodyContainerFvb.isNewItemInsertionMode()) {
             handleExitWithNewItemInsertionMode();
             return;
         }
@@ -222,7 +222,7 @@ public class DetailClipItemFragment
 
     @Override
     public void notifyInsertionSuccess(@NonNull ClipDomain domain) {
-        ClipListViewSkyRail.getInstance().getSkyRail().send(new SkyRailClipListEvent.InsertedNewItem(domain));
+        ClipListViewSkyRail.getInstance().getSkyRail().send(new ClipListViewSkyRailEvents.InsertedNewItem(domain));
         finishActivity(true);
     }
 
@@ -247,7 +247,7 @@ public class DetailClipItemFragment
     }
 
     private void handleExitWithNewItemInsertionMode() {
-        if (!mEditBodyViewBinder.validateInputField()) {
+        if (!mDetailViewBodyContainerFvb.validateInputField()) {
             getActivity().finish();
             return;
         }
@@ -255,7 +255,7 @@ public class DetailClipItemFragment
     }
 
     private void handleExitWithEditItemMode() {
-        final boolean existModifiedData = mEditBodyViewBinder.existModifiedData();
+        final boolean existModifiedData = mDetailViewBodyContainerFvb.existModifiedData();
         if (!existModifiedData) {
             getActivity().finish();
             return;
@@ -264,12 +264,12 @@ public class DetailClipItemFragment
     }
 
     private void insertOrUpdateDataToRepository() {
-        if (mEditBodyViewBinder.isNewItemInsertionMode()) {
+        if (mDetailViewBodyContainerFvb.isNewItemInsertionMode()) {
             getPresenter().insertNewItemToRepository(getResources(),
-                  mEditBodyViewBinder.buildDomainForInsertionToRepository());
+                  mDetailViewBodyContainerFvb.buildDomainForInsertionToRepository());
             return;
         }
-        getPresenter().updateClipDataToRepository(getResources(), mEditBodyViewBinder.getDomainWithInputData());
+        getPresenter().updateClipDataToRepository(getResources(), mDetailViewBodyContainerFvb.getDomainWithInputData());
     }
 
     // ========================================================================

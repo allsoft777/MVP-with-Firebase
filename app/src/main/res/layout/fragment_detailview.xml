@@ -28,45 +28,56 @@
 
     </FrameLayout>
 
-    <LinearLayout
+    <FrameLayout
         android:id="@+id/soft_menu_container"
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:layout_gravity="bottom"
-        android:background="@color/soft_button_container_background"
         android:gravity="center"
-        android:orientation="horizontal">
+        android:orientation="vertical">
 
-        <Button
-            android:id="@+id/btn_close"
-            style="@style/DetailView_SoftButton"
-            android:background="@drawable/selector_ic_back"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@color/grey_900"/>
 
-        <Button
-            android:id="@+id/btn_toggle_edit"
-            style="@style/DetailView_SoftButton"
-            android:background="@drawable/selector_ic_edit"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center">
 
-        <Button
-            android:id="@+id/btn_favourites"
-            style="@style/DetailView_SoftButton"
-            android:background="@drawable/selector_ic_favorite_false"/>
+            <Button
+                android:id="@+id/btn_close"
+                android:background="@drawable/selector_ic_back"
+                style="@style/DetailView_SoftButton"/>
 
-        <Button
-            android:id="@+id/btn_share"
-            style="@style/DetailView_SoftButton"
-            android:background="@drawable/selector_ic_share"/>
+            <Button
+                android:id="@+id/btn_toggle_edit"
+                android:background="@drawable/selector_ic_edit"
+                style="@style/DetailView_SoftButton"/>
 
-        <Button
-            android:id="@+id/btn_copy"
-            style="@style/DetailView_SoftButton"
-            android:background="@drawable/selector_ic_copy"/>
+            <Button
+                android:id="@+id/btn_favourites"
+                android:background="@drawable/selector_ic_favorite_false"
+                style="@style/DetailView_SoftButton"/>
 
-        <Button
-            android:id="@+id/btn_delete"
-            style="@style/DetailView_SoftButton"
-            android:background="@drawable/selector_ic_delete"/>
+            <Button
+                android:id="@+id/btn_share"
+                android:background="@drawable/selector_ic_share"
+                style="@style/DetailView_SoftButton"/>
 
-    </LinearLayout>
+            <Button
+                android:id="@+id/btn_copy"
+                android:background="@drawable/selector_ic_copy"
+                style="@style/DetailView_SoftButton"/>
+
+            <Button
+                android:id="@+id/btn_delete"
+                android:background="@drawable/selector_ic_delete"
+                style="@style/DetailView_SoftButton"/>
+
+        </LinearLayout>
+    </FrameLayout>
 
 </LinearLayout>

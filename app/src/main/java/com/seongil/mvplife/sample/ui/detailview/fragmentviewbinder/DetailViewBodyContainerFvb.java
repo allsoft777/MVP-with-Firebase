@@ -1,4 +1,4 @@
-package com.seongil.mvplife.sample.ui.detailview.viewbinder;
+package com.seongil.mvplife.sample.ui.detailview.fragmentviewbinder;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -20,7 +20,7 @@ import com.seongil.mvplife.viewbinder.RxMvpViewBinder;
  * @author seong-il, kim
  * @since 17. 5. 1
  */
-public class EditBodyViewBinder extends RxMvpViewBinder {
+public class DetailViewBodyContainerFvb extends RxMvpViewBinder {
 
     // ========================================================================
     // constants
@@ -36,7 +36,7 @@ public class EditBodyViewBinder extends RxMvpViewBinder {
     // ========================================================================
     // constructors
     // ========================================================================
-    public EditBodyViewBinder() {
+    public DetailViewBodyContainerFvb() {
         mViewModel = new ClipDomainViewModel(new ClipDomain());
     }
 

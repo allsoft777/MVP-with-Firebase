@@ -18,7 +18,7 @@ import com.seongil.mvplife.sample.repository.clip.RxFirebaseClipItem;
 import com.seongil.mvplife.sample.repository.detailpost.DetailTableRef;
 import com.seongil.mvplife.sample.repository.summarypost.SummaryTableRef;
 import com.seongil.mvplife.sample.ui.detailview.skyrail.DetailViewSkyRail;
-import com.seongil.mvplife.sample.ui.detailview.skyrail.SkyRailClipItemDetailViewEvent;
+import com.seongil.mvplife.sample.ui.detailview.skyrail.DetailViewSkyRailEvents;
 
 import io.reactivex.Observable;
 import io.reactivex.Single;
@@ -64,7 +64,7 @@ public class DetailClipItemPresenter extends RxMvpPresenter<DetailClipItemView> 
     }
 
     private void handleRailEvent(Object o) {
-        if (o instanceof SkyRailClipItemDetailViewEvent.OnBackPressedEvent) {
+        if (o instanceof DetailViewSkyRailEvents.OnBackPressedEvent) {
             getView().onBackPressed();
         }
     }

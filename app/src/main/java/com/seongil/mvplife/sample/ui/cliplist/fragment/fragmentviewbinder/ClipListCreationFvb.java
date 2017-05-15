@@ -1,4 +1,4 @@
-package com.seongil.mvplife.sample.ui.cliplist.fragment.viewbinder;
+package com.seongil.mvplife.sample.ui.cliplist.fragment.fragmentviewbinder;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;
@@ -18,7 +18,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
  * @author seong-il, kim
  * @since 17. 5. 6
  */
-public class InputContainerViewBinder implements MvpViewBinder {
+public class ClipListCreationFvb implements MvpViewBinder {
 
     // ========================================================================
     // constants
@@ -42,7 +42,7 @@ public class InputContainerViewBinder implements MvpViewBinder {
     // ========================================================================
     @Override
     public void initializeLayout(@NonNull View layout) {
-        mContainerView = layout.findViewById(R.id.input_container);
+        mContainerView = layout;
         RxView.clicks(layout.findViewById(R.id.make_notes))
               .throttleFirst(1, TimeUnit.SECONDS, AndroidSchedulers.mainThread())
               .subscribe(___ -> launchEditView());
@@ -50,7 +50,7 @@ public class InputContainerViewBinder implements MvpViewBinder {
 
     @Override
     public void onDestroyView() {
-
+        mContainerView = null;
     }
 
     // ========================================================================

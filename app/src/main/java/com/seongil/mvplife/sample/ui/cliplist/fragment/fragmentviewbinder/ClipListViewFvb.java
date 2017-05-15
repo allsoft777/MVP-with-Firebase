@@ -1,4 +1,4 @@
-package com.seongil.mvplife.sample.ui.cliplist.fragment.viewbinder;
+package com.seongil.mvplife.sample.ui.cliplist.fragment.fragmentviewbinder;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -20,14 +20,13 @@ import com.seongil.mvplife.sample.common.utils.RxTransformer;
 import com.seongil.mvplife.sample.domain.ClipDomain;
 import com.seongil.mvplife.sample.ui.cliplist.adapter.ClipListAdapter;
 import com.seongil.mvplife.sample.ui.cliplist.skyrail.ClipListViewSkyRail;
-import com.seongil.mvplife.sample.ui.cliplist.skyrail.SkyRailClipListEvent;
+import com.seongil.mvplife.sample.ui.cliplist.skyrail.ClipListViewSkyRailEvents;
 import com.seongil.mvplife.sample.ui.detailview.activity.DetailClipItemActivity;
 import com.seongil.mvplife.sample.viewmodel.ClipDomainViewModel;
 import com.seongil.mvplife.viewbinder.RxMvpViewBinder;
 import com.seongil.recyclerviewlife.model.common.ViewStatus;
 import com.seongil.recyclerviewlife.scroll.LinearRecyclerViewScrollListener;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -40,7 +39,7 @@ import io.reactivex.schedulers.Schedulers;
  * @author seong-il, kim
  * @since 17. 4. 26
  */
-public class ClipListViewBinder extends RxMvpViewBinder {
+public class ClipListViewFvb extends RxMvpViewBinder {
 
     // ========================================================================
     // constants
@@ -55,7 +54,7 @@ public class ClipListViewBinder extends RxMvpViewBinder {
     // ========================================================================
     // fields
     // ========================================================================
-    private ClipListFragmentViewBinderListener mFragmentListener;
+    private ClipListFvbListener mFvbListener;
     private int mState = STATE_LIST_VIEW;
     private LayoutInflater mLayoutInflater;
     private RecyclerView mListView;
@@ -71,10 +70,9 @@ public class ClipListViewBinder extends RxMvpViewBinder {
     // ========================================================================
     // constructors
     // ========================================================================
-    public ClipListViewBinder(@NonNull LayoutInflater layoutInflater,
-                              @NonNull ClipListFragmentViewBinderListener fragmentViewBinderListener) {
+    public ClipListViewFvb(@NonNull LayoutInflater layoutInflater, @NonNull ClipListFvbListener clipListFvbListener) {
         mLayoutInflater = layoutInflater;
-        mFragmentListener = fragmentViewBinderListener;
+        mFvbListener = clipListFvbListener;
     }
 
     // ========================================================================
@@ -111,7 +109,7 @@ public class ClipListViewBinder extends RxMvpViewBinder {
     public void onDestroyView() {
         super.onDestroyView();
         mLayoutInflater = null;
-        mFragmentListener = null;
+        mFvbListener = null;
         mAdapter = null;
         mListView = null;
     }
@@ -147,7 +145,7 @@ public class ClipListViewBinder extends RxMvpViewBinder {
                 super.onLoadNextData();
                 if (mExistNextItemMore && mState != STATE_MORE_ITEM_LOADING_VIEW) {
                     mState = STATE_MORE_ITEM_LOADING_VIEW;
-                    mFragmentListener.fetchNextItemMoreFromRepository(getLastItemKey());
+                    mFvbListener.fetchNextItemMoreFromRepository(getLastItemKey());
                 }
             }
         };
@@ -178,31 +176,31 @@ public class ClipListViewBinder extends RxMvpViewBinder {
     }
 
     private void handleRailEvent(Object o) {
-        if (o instanceof SkyRailClipListEvent.FavoriteItemEvent) {
-            handleClickedFavoriteItem((SkyRailClipListEvent.FavoriteItemEvent) o);
-        } else if (o instanceof SkyRailClipListEvent.ClickItemEvent) {
-            handleClickedItem((SkyRailClipListEvent.ClickItemEvent) o);
-        } else if (o instanceof SkyRailClipListEvent.LongClickItemEvent) {
-            handleLongClickedItem((SkyRailClipListEvent.LongClickItemEvent) o);
-        } else if (o instanceof SkyRailClipListEvent.CopyItemToClipboard) {
-            copyDataToClipboard((SkyRailClipListEvent.CopyItemToClipboard) o);
-        } else if (o instanceof SkyRailClipListEvent.InsertedNewItem) {
-            insertItemToFirstPosition(((SkyRailClipListEvent.InsertedNewItem) o).getDomain());
-        } else if (o instanceof SkyRailClipListEvent.DeletedItem) {
-            removeItemFromListView(((SkyRailClipListEvent.DeletedItem) o).getItemKey());
-        } else if (o instanceof SkyRailClipListEvent.UpdatedItem) {
-            updateViewModel(((SkyRailClipListEvent.UpdatedItem) o).getDomain());
-        } else if (o instanceof SkyRailClipListEvent.UpdateFavouritesState) {
-            SkyRailClipListEvent.UpdateFavouritesState event = (SkyRailClipListEvent.UpdateFavouritesState) o;
+        if (o instanceof ClipListViewSkyRailEvents.FavoriteItemEvent) {
+            handleClickedFavoriteItem((ClipListViewSkyRailEvents.FavoriteItemEvent) o);
+        } else if (o instanceof ClipListViewSkyRailEvents.ClickItemEvent) {
+            handleClickedItem((ClipListViewSkyRailEvents.ClickItemEvent) o);
+        } else if (o instanceof ClipListViewSkyRailEvents.LongClickItemEvent) {
+            handleLongClickedItem((ClipListViewSkyRailEvents.LongClickItemEvent) o);
+        } else if (o instanceof ClipListViewSkyRailEvents.CopyItemToClipboard) {
+            copyDataToClipboard((ClipListViewSkyRailEvents.CopyItemToClipboard) o);
+        } else if (o instanceof ClipListViewSkyRailEvents.InsertedNewItem) {
+            insertItemToFirstPosition(((ClipListViewSkyRailEvents.InsertedNewItem) o).getDomain());
+        } else if (o instanceof ClipListViewSkyRailEvents.DeletedItem) {
+            removeItemFromListView(((ClipListViewSkyRailEvents.DeletedItem) o).getItemKey());
+        } else if (o instanceof ClipListViewSkyRailEvents.UpdatedItem) {
+            updateViewModel(((ClipListViewSkyRailEvents.UpdatedItem) o).getDomain());
+        } else if (o instanceof ClipListViewSkyRailEvents.UpdateFavouritesState) {
+            ClipListViewSkyRailEvents.UpdateFavouritesState event = (ClipListViewSkyRailEvents.UpdateFavouritesState) o;
             renderFavouritesState(event.getItemKey(), event.isFavouritesItem());
-        } else if (o instanceof SkyRailClipListEvent.SelectItem) {
-            handleSelectItemEvent((SkyRailClipListEvent.SelectItem) o);
+        } else if (o instanceof ClipListViewSkyRailEvents.SelectItem) {
+            handleSelectItemEvent((ClipListViewSkyRailEvents.SelectItem) o);
         } else {
             throw new AssertionError("There is no defined event : " + o.getClass().getSimpleName());
         }
     }
 
-    private void handleSelectItemEvent(SkyRailClipListEvent.SelectItem o) {
+    private void handleSelectItemEvent(ClipListViewSkyRailEvents.SelectItem o) {
         final int pos = getPositionByKey(o.getKey());
         if (pos == INVALID_KEY_POSITION) {
             return;
@@ -210,15 +208,15 @@ public class ClipListViewBinder extends RxMvpViewBinder {
         mAdapter.getDataSet().get(pos).setSelected(o.isSelected());
     }
 
-    private void handleClickedFavoriteItem(SkyRailClipListEvent.FavoriteItemEvent o) {
+    private void handleClickedFavoriteItem(ClipListViewSkyRailEvents.FavoriteItemEvent o) {
         final int pos = getPositionByKey(o.getKey());
         if (pos == INVALID_KEY_POSITION) {
             return;
         }
-        mFragmentListener.updateFavouritesItemToRepository(o.getKey(), o.isFavourites());
+        mFvbListener.updateFavouritesItemToRepository(o.getKey(), o.isFavourites());
     }
 
-    private void handleClickedItem(SkyRailClipListEvent.ClickItemEvent o) {
+    private void handleClickedItem(ClipListViewSkyRailEvents.ClickItemEvent o) {
         if (mAdapter.isSelectionMode()) {
             final int pos = getPositionByKey(o.getKey());
             if (pos == INVALID_KEY_POSITION) {
@@ -227,7 +225,7 @@ public class ClipListViewBinder extends RxMvpViewBinder {
             final boolean curState = mAdapter.getDataSet().get(pos).isSelected();
             mAdapter.getDataSet().get(pos).setSelected(!curState);
             mAdapter.notifyItemChanged(pos);
-            mFragmentListener.renderCountOfSelectedItems(mAdapter.getSelectedItemCount());
+            mFvbListener.renderCountOfSelectedItems(mAdapter.getSelectedItemCount());
         } else {
             launchDetailView(o.getKey());
         }
@@ -244,7 +242,7 @@ public class ClipListViewBinder extends RxMvpViewBinder {
         MainApplication.getAppContext().startActivity(intent);
     }
 
-    private void copyDataToClipboard(SkyRailClipListEvent.CopyItemToClipboard o) {
+    private void copyDataToClipboard(ClipListViewSkyRailEvents.CopyItemToClipboard o) {
         int pos = getPositionByKey(o.getKey());
         if (pos == INVALID_KEY_POSITION) {
             return;
@@ -257,9 +255,11 @@ public class ClipListViewBinder extends RxMvpViewBinder {
               .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
               .subscribe(___ -> mListView.scrollToPosition(0));
         addDisposable(disposable);
+
+        mFvbListener.renderCountOfSelectedItems(mAdapter.getSelectedItemCount());
     }
 
-    private void handleLongClickedItem(SkyRailClipListEvent.LongClickItemEvent o) {
+    private void handleLongClickedItem(ClipListViewSkyRailEvents.LongClickItemEvent o) {
         if (mAdapter.isSelectionMode()) {
             return;
         }
@@ -270,7 +270,7 @@ public class ClipListViewBinder extends RxMvpViewBinder {
         mAdapter.getDataSet().get(pos).setSelected(true);
         mAdapter.setSelectionMode(true);
         mAdapter.notifyItemRangeChanged(0, mAdapter.getItemCount(true));
-        mFragmentListener.startContextActionBar();
+        mFvbListener.startContextActionBar();
     }
 
     private int getPositionByKey(@NonNull String itemKey) {
@@ -322,7 +322,8 @@ public class ClipListViewBinder extends RxMvpViewBinder {
         }
     }
 
-    public void insertCollectionToLastPosition(@NonNull List<ClipDomain> list, final boolean existNextItemMore) {
+    public void insertCollectionToLastPosition(
+          @NonNull List<ClipDomainViewModel> list, final boolean existNextItemMore) {
         mExistNextItemMore = existNextItemMore;
         if (!mExistNextItemMore) {
             mAdapter.updateFooterViewStatus(ViewStatus.VISIBLE_LABEL_VIEW, false);
@@ -331,16 +332,11 @@ public class ClipListViewBinder extends RxMvpViewBinder {
         if (mState != STATE_LIST_VIEW) {
             renderListView();
         }
-
-        List<ClipDomainViewModel> dataSet = new ArrayList<>();
-        for (ClipDomain domain : list) {
-            dataSet.add(new ClipDomainViewModel(domain));
-        }
-        mAdapter.addCollectionToLastPosition(dataSet);
+        mAdapter.addCollectionToLastPosition(list);
     }
 
     private void insertItemToFirstPosition(@NonNull ClipDomain domain) {
-        if (mFragmentListener.isFavouritesItemFilterMode() && !domain.isFavouritesItem()) {
+        if (mFvbListener.isFavouritesItemFilterMode() && !domain.isFavouritesItem()) {
             return;
         }
 
@@ -381,7 +377,7 @@ public class ClipListViewBinder extends RxMvpViewBinder {
         if (pos == INVALID_KEY_POSITION) {
             return;
         }
-        if (!isFavouritesItem && mFragmentListener.isFavouritesItemFilterMode()) {
+        if (!isFavouritesItem && mFvbListener.isFavouritesItemFilterMode()) {
             removeItemFromListView(itemKey);
             return;
         }

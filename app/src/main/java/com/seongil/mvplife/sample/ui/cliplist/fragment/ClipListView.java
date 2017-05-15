@@ -2,8 +2,8 @@ package com.seongil.mvplife.sample.ui.cliplist.fragment;
 
 import android.support.annotation.NonNull;
 
-import com.seongil.mvplife.sample.domain.ClipDomain;
 import com.seongil.mvplife.sample.ui.base.BaseView;
+import com.seongil.mvplife.sample.viewmodel.ClipDomainViewModel;
 
 import java.util.List;
 
@@ -20,7 +20,7 @@ public interface ClipListView extends BaseView {
     // ========================================================================
     // methods
     // ========================================================================
-    void renderClipDataList(@NonNull List<ClipDomain> list, final boolean existNextItemMore);
+    void renderClipDataList(@NonNull List<ClipDomainViewModel> list, final boolean existNextItemMore);
 
     void renderError(@NonNull Throwable t);
 

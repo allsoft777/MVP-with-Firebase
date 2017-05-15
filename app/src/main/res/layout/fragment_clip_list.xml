@@ -15,20 +15,25 @@
         <include layout="@layout/merge_recycler_view_set"/>
     </FrameLayout>
 
-    <LinearLayout
-        android:id="@+id/input_container"
+    <FrameLayout
+        android:id="@+id/bottom_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/list_view_container"
-        android:background="@color/soft_button_container_background"
         android:gravity="center_vertical"
         android:minHeight="@dimen/common_list_item_min_height"
-        android:orientation="horizontal">
+        android:orientation="vertical">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@color/grey_900"/>
 
         <TextView
             android:id="@+id/make_notes"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
             android:layout_marginEnd="@dimen/activity_horizontal_margin"
             android:layout_marginStart="@dimen/activity_horizontal_margin"
             android:focusable="false"
@@ -36,6 +41,6 @@
             android:selectAllOnFocus="false"
             android:textStyle="bold"/>
 
-    </LinearLayout>
+    </FrameLayout>
 
 </RelativeLayout>

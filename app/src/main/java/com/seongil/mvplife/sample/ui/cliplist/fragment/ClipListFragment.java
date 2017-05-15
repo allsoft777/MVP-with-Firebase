@@ -5,6 +5,7 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.ActionMode;
+import android.view.ActionMode.Callback;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -14,11 +15,11 @@ import com.seongil.mvplife.sample.R;
 import com.seongil.mvplife.sample.application.MainApplication;
 import com.seongil.mvplife.sample.common.sharedprefs.DefaultSharedPrefWrapper;
 import com.seongil.mvplife.sample.common.sharedprefs.SharedPrefKeys;
-import com.seongil.mvplife.sample.domain.ClipDomain;
 import com.seongil.mvplife.sample.ui.base.BaseFragment;
-import com.seongil.mvplife.sample.ui.cliplist.fragment.viewbinder.ClipListFragmentViewBinderListener;
-import com.seongil.mvplife.sample.ui.cliplist.fragment.viewbinder.ClipListViewBinder;
-import com.seongil.mvplife.sample.ui.cliplist.fragment.viewbinder.InputContainerViewBinder;
+import com.seongil.mvplife.sample.ui.cliplist.fragment.fragmentviewbinder.ClipListCreationFvb;
+import com.seongil.mvplife.sample.ui.cliplist.fragment.fragmentviewbinder.ClipListFvbListener;
+import com.seongil.mvplife.sample.ui.cliplist.fragment.fragmentviewbinder.ClipListViewFvb;
+import com.seongil.mvplife.sample.viewmodel.ClipDomainViewModel;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -31,7 +32,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
  * @since 17. 4. 26
  */
 public class ClipListFragment extends BaseFragment<ClipListView, ClipListPresenter>
-      implements ClipListView, ClipListFragmentViewBinderListener {
+      implements ClipListView, ClipListFvbListener {
 
     // ========================================================================
     // constants
@@ -41,8 +42,8 @@ public class ClipListFragment extends BaseFragment<ClipListView, ClipListPresent
     // ========================================================================
     // fields
     // ========================================================================
-    private ClipListViewBinder mClipListViewBinder;
-    private InputContainerViewBinder mInputContainerViewBinder;
+    private ClipListViewFvb mClipListViewBinder;
+    private ClipListCreationFvb mClipListMenuContainerFvb;
     private ActionMode mActionMode;
 
     // ========================================================================
@@ -79,14 +80,14 @@ public class ClipListFragment extends BaseFragment<ClipListView, ClipListPresent
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mClipListViewBinder = new ClipListViewBinder(getActivity().getLayoutInflater(), this);
-        mInputContainerViewBinder = new InputContainerViewBinder();
+        mClipListViewBinder = new ClipListViewFvb(getActivity().getLayoutInflater(), this);
+        mClipListMenuContainerFvb = new ClipListCreationFvb();
 
         mClipListViewBinder.initializeLayout(view.findViewById(R.id.list_view_container));
-        mInputContainerViewBinder.initializeLayout(view.findViewById(R.id.input_container));
+        mClipListMenuContainerFvb.initializeLayout(view.findViewById(R.id.bottom_container));
 
         mClipListViewBinder.renderLoadingView();
-        mInputContainerViewBinder.hideContainer();
+        mClipListMenuContainerFvb.hideContainer();
 
         getPresenter().fetchClipListFromRepository("", isFavouritesItemFilterMode());
     }
@@ -105,7 +106,7 @@ public class ClipListFragment extends BaseFragment<ClipListView, ClipListPresent
             mActionMode = null;
         }
         mClipListViewBinder.onDestroyView();
-        mInputContainerViewBinder.onDestroyView();
+        mClipListMenuContainerFvb.onDestroyView();
     }
 
     @Override
@@ -133,19 +134,19 @@ public class ClipListFragment extends BaseFragment<ClipListView, ClipListPresent
         dismissProgressDialog();
         renderToastMsg(t.toString());
         mClipListViewBinder.renderErrorView(t);
-        mInputContainerViewBinder.renderErrorView(t);
+        mClipListMenuContainerFvb.renderErrorView(t);
     }
 
     @Override
-    public void renderClipDataList(@NonNull List<ClipDomain> list, final boolean existNextItemMore) {
+    public void renderClipDataList(@NonNull List<ClipDomainViewModel> list, final boolean existNextItemMore) {
         mClipListViewBinder.insertCollectionToLastPosition(list, existNextItemMore);
-        mInputContainerViewBinder.showContainer();
+        mClipListMenuContainerFvb.showContainer();
     }
 
     @Override
     public void renderEmptyView() {
         mClipListViewBinder.renderEmptyView();
-        mInputContainerViewBinder.showContainer();
+        mClipListMenuContainerFvb.showContainer();
     }
 
     @Override
@@ -181,7 +182,10 @@ public class ClipListFragment extends BaseFragment<ClipListView, ClipListPresent
 
     @Override
     public void renderCountOfSelectedItems(int count) {
-        mActionMode.setTitle(" " + count);
+        if (mActionMode == null) {
+            return;
+        }
+        mActionMode.setTitle(count);
         mActionMode.invalidate();
     }
 
@@ -195,6 +199,17 @@ public class ClipListFragment extends BaseFragment<ClipListView, ClipListPresent
         msg += size > 1 ? getString(R.string.msg_multiple_items_removed)
               : getString(R.string.msg_an_item_removed);
         renderToastMsg(msg);
+    }
+
+    @Override
+    public void finishActivity() {
+        getActivity().finish();
+    }
+
+    @Override
+    public void removeSelectedItems() {
+        getPresenter().removeClipItemsFromRepository(mClipListViewBinder.getSelectedItemKeys());
+        mActionMode.finish();
     }
 
     // ========================================================================
@@ -215,11 +230,6 @@ public class ClipListFragment extends BaseFragment<ClipListView, ClipListPresent
               MainApplication.getAppContext(), SharedPrefKeys.KEY_CLIP_LIST_FAVOURITES_ITEM_SWITCH_ON, switchOn);
     }
 
-    private void removeSelectedItems() {
-        getPresenter().removeClipItemsFromRepository(mClipListViewBinder.getSelectedItemKeys());
-        mActionMode.finish();
-    }
-
     private void handleClickedFavouritesItem(MenuItem item) {
         if (mClipListViewBinder.isInitialLoadingState()) {
             return;
@@ -238,7 +248,7 @@ public class ClipListFragment extends BaseFragment<ClipListView, ClipListPresent
     // ========================================================================
     // inner and anonymous classes
     // ========================================================================
-    private class ContextActionModeCallback implements android.view.ActionMode.Callback {
+    private class ContextActionModeCallback implements Callback {
 
         @Override
         public boolean onCreateActionMode(android.view.ActionMode mode, Menu menu) {
@@ -250,7 +260,7 @@ public class ClipListFragment extends BaseFragment<ClipListView, ClipListPresent
         @Override
         public boolean onPrepareActionMode(android.view.ActionMode mode, Menu menu) {
             final int count = mClipListViewBinder.getSelectedItemCount();
-            mActionMode.setTitle("  " + count);
+            mActionMode.setTitle(count);
             MenuItem done = menu.findItem(R.id.action_delete);
             done.setEnabled(count > 0);
             return false;
