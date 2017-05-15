@@ -53,17 +53,27 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        release {
+            storeFile file(CLIP_DIARY_STORE_FILE)
+            storePassword CLIP_DIARY_STORE_PASSWORD
+            keyAlias CLIP_DIARY_KEY_ALIAS
+            keyPassword CLIP_DIARY_KEY_PASSWORD
+        }
+    }
+
     buildTypes {
         applicationVariants.all { variant ->
             variant.outputs.each { output ->
                 output.outputFile = new File(output.outputFile.parent,
-                    output.outputFile.name.replace(".apk", "-${variant.versionName}.apk"))
+                    output.outputFile.name.replace(".apk", "-${variant.versionCode}-v${variant.versionName}.apk"))
             }
         }
 
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
 
