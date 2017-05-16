@@ -1,6 +1,6 @@
 package com.seongil.mvplife.sample.common.utils;
 
-import android.text.TextUtils;
+import com.seongil.mvplife.sample.common.firebase.reporter.CrashReporter;
 
 /**
  * @author seong-il, kim
@@ -31,25 +31,52 @@ public class StringUtil {
     // ========================================================================
     // methods
     // ========================================================================
-    public static String subString(String str, int startIndex, int length) throws Exception {
-        if (TextUtils.isEmpty(str)) {
-            return str;
-        }
-        if (str.length() < length) {
-            return str;
-        }
+    public static String subString(String str, int length) {
+        return parseStringByBytes(str, length, "UTF-8")[0];
+    }
 
-        byte[] b1;
-        byte[] b2;
-        b1 = str.getBytes();
-        b2 = new byte[length];
-
-        if (length > (b1.length - startIndex)) {
-            length = b1.length - startIndex;
+    public static String[] parseStringByBytes(String raw, int len, String encoding) {
+        if (raw == null) {
+            return null;
         }
 
-        System.arraycopy(b1, startIndex, b2, 0, length);
-        return new String(b2);
+        String[] ary = null;
+        try {
+            byte[] rawBytes = raw.getBytes(encoding);
+            int rawLength = rawBytes.length;
+
+            int index = 0;
+            int minusByteNum;
+            int offset;
+            int hangulByteNum = encoding.equals("UTF-8") ? 3 : 2;
+
+            if (rawLength > len) {
+                int aryLength = (rawLength / len) + (rawLength % len != 0 ? 1 : 0);
+                ary = new String[aryLength];
+                for (int i = 0; i < aryLength; i++) {
+                    minusByteNum = 0;
+                    offset = len;
+                    if (index + offset > rawBytes.length) {
+                        offset = rawBytes.length - index;
+                    }
+                    for (int j = 0; j < offset; j++) {
+                        if (((int) rawBytes[index + j] & 0x80) != 0) {
+                            minusByteNum++;
+                        }
+                    }
+                    if (minusByteNum % hangulByteNum != 0) {
+                        offset -= minusByteNum % hangulByteNum;
+                    }
+                    ary[i] = new String(rawBytes, index, offset, encoding);
+                    index += offset;
+                }
+            } else {
+                ary = new String[] { raw };
+            }
+        } catch (Exception e) {
+            CrashReporter.getInstance().report(new Throwable("Failed to parse string with the given length"));
+        }
+        return ary;
     }
 
     // ========================================================================

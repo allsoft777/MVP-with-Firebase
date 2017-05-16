@@ -37,6 +37,7 @@ public class SummaryTableRef {
     // ========================================================================
     // constants
     // ========================================================================
+    public static final int SUMMARY_TITLE_LENGTH = 100;
 
     // ========================================================================
     // fields
@@ -98,7 +99,8 @@ public class SummaryTableRef {
             try {
                 Map<String, Object> dataSet = new HashMap<>(4);
                 dataSet.put(RepoTableContracts.COL_CREATED_AT, domain.getCreatedAt());
-                dataSet.put(RepoTableContracts.COL_DATA, StringUtil.subString(domain.getTextData(), 0, 100));
+                dataSet.put(RepoTableContracts.COL_DATA,
+                      StringUtil.subString(domain.getTextData(), SummaryTableRef.SUMMARY_TITLE_LENGTH));
                 dataSet.put(RepoTableContracts.COL_SOURCE, domain.getSource());
                 dataSet.put(RepoTableContracts.COL_FAVORITE_ITEM, domain.isFavouritesItem());
 
@@ -149,7 +151,8 @@ public class SummaryTableRef {
             Map<String, Object> dataSet = new HashMap<>(4);
             dataSet.put(RepoTableContracts.COL_CREATED_AT, domain.getCreatedAt());
             try {
-                dataSet.put(RepoTableContracts.COL_DATA, StringUtil.subString(domain.getTextData(), 0, 100));
+                dataSet.put(RepoTableContracts.COL_DATA,
+                      StringUtil.subString(domain.getTextData(), SummaryTableRef.SUMMARY_TITLE_LENGTH));
             } catch (Exception e1) {
                 e1.printStackTrace();
             }

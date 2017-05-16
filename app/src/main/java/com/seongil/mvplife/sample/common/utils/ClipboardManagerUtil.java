@@ -6,6 +6,7 @@ import android.text.ClipboardManager;
 import com.seongil.mvplife.sample.R;
 import com.seongil.mvplife.sample.application.MainApplication;
 import com.seongil.mvplife.sample.common.firebase.reporter.CrashReporter;
+import com.seongil.mvplife.sample.repository.summarypost.SummaryTableRef;
 
 /**
  * @author seong-il, kim
@@ -47,7 +48,8 @@ public class ClipboardManagerUtil {
                         .getSystemService(Context.CLIPBOARD_SERVICE);
             android.content.ClipData clip = null;
             try {
-                clip = android.content.ClipData.newPlainText(StringUtil.subString(text, 0, 20), text);
+                clip = android.content.ClipData.newPlainText(
+                      StringUtil.subString(text, SummaryTableRef.SUMMARY_TITLE_LENGTH), text);
             } catch (Exception e) {
                 CrashReporter.getInstance().report(e);
                 e.printStackTrace();

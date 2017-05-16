@@ -24,8 +24,8 @@
 
         <TextView
             android:id="@+id/time"
-            style="@style/ClipListItem_DateTime"
-            android:layout_gravity="end"/>
+            android:layout_gravity="end"
+            style="@style/ClipListItem_DateTime"/>
     </FrameLayout>
 
     <LinearLayout
@@ -55,6 +55,8 @@
             android:layout_marginLeft="10dp"
             android:layout_marginStart="10dp"
             android:layout_weight="1"
+            android:ellipsize="end"
+            android:lines="2"
             android:textAppearance="@style/sans_serif_15_regular"/>
 
         <ImageView

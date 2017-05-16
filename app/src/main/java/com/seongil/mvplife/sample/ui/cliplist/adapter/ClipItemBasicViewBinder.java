@@ -16,6 +16,7 @@ import com.seongil.mvplife.sample.common.datetime.RxFormat;
 import com.seongil.mvplife.sample.common.utils.RxTransformer;
 import com.seongil.mvplife.sample.common.utils.StringUtil;
 import com.seongil.mvplife.sample.domain.ClipDomain;
+import com.seongil.mvplife.sample.repository.summarypost.SummaryTableRef;
 import com.seongil.mvplife.sample.ui.cliplist.skyrail.ClipListViewSkyRail;
 import com.seongil.mvplife.sample.ui.cliplist.skyrail.ClipListViewSkyRailEvents;
 import com.seongil.mvplife.sample.viewmodel.ClipDomainViewModel;
@@ -131,7 +132,7 @@ public class ClipItemBasicViewBinder extends AbstractViewBinder {
         }
 
         String removeLineFeed = textData.replace("\n", " ").replace("\r", " ");
-        return StringUtil.subString(removeLineFeed, 0, 60);
+        return StringUtil.subString(removeLineFeed, SummaryTableRef.SUMMARY_TITLE_LENGTH);
     }
 
     // ========================================================================
