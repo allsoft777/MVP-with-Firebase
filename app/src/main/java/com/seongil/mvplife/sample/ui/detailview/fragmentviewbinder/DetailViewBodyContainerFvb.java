@@ -52,7 +52,7 @@ public class DetailViewBodyContainerFvb extends RxMvpViewBinder {
     public void initializeLayout(@NonNull View layout) {
         super.initializeLayout(layout);
         mLoadingView = (ProgressBar) layout.findViewById(R.id.loading_bar);
-        mEditText = (EditText) layout.findViewById(R.id.edit_text);
+        mEditText = (EditText) layout.findViewById(R.id.content_edittext);
         mEditText.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
                 toggleSoftInput();

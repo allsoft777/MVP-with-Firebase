@@ -6,27 +6,34 @@
     android:gravity="center"
     android:orientation="vertical">
 
-    <FrameLayout
-        android:id="@+id/content_container"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:orientation="vertical"
-        android:paddingEnd="@dimen/activity_horizontal_margin"
-        android:paddingStart="@dimen/activity_horizontal_margin"
-        android:paddingTop="@dimen/activity_vertical_margin">
+        android:overScrollMode="never">
 
-        <include layout="@layout/merge_common_loading_view"/>
-
-        <EditText
-            android:id="@+id/edit_text"
+        <FrameLayout
+            android:id="@+id/content_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textMultiLine"
-            android:textColor="@color/grey_900"
-            android:textSize="15dp"/>
+            android:orientation="vertical"
+            android:paddingEnd="@dimen/activity_horizontal_margin"
+            android:paddingStart="@dimen/activity_horizontal_margin"
+            android:paddingTop="@dimen/activity_vertical_margin">
 
-    </FrameLayout>
+            <include layout="@layout/merge_common_loading_view"/>
+
+            <EditText
+                android:id="@+id/content_edittext"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textMultiLine"
+                android:linksClickable="true"
+                android:textColor="@color/grey_900"
+                android:textSize="15dp"/>
+
+        </FrameLayout>
+    </ScrollView>
 
     <FrameLayout
         android:id="@+id/soft_menu_container"

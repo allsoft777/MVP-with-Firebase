@@ -35,25 +35,23 @@ public class AnalyticsReporter {
     // methods
     // ========================================================================
     private static FirebaseAnalytics getAnalytics() {
-        return FirebaseAnalytics.getInstance(MainApplication.getAppContext());
+        FirebaseAnalytics analytics = FirebaseAnalytics.getInstance(MainApplication.getAppContext());
+        analytics.setAnalyticsCollectionEnabled(true);
+        analytics.setMinimumSessionDuration(5000);
+        return analytics;
     }
 
     public static void createNewClipManually() {
-        getAnalytics().logEvent("cliplist_create_manually", new Bundle());
+        Bundle bundle = new Bundle();
+        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, "create_new_item");
+        getAnalytics().logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
     }
 
     public static void shareClipItem(Bundle bundle) {
-        getAnalytics().logEvent("cliplist_share_item", bundle);
+        getAnalytics().logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
     }
 
     // ========================================================================
     // inner and anonymous classes
     // ========================================================================
-    public static class Param {
-
-        public static final String ITEM_CNT = "item_count";
-        public static final String TRIGGER_VIEW = "trigger_view";
-        public static final String LIST_VIEW = "list_view";
-        public static final String DETAIL_VIEW = "detail_view";
-    }
 }
