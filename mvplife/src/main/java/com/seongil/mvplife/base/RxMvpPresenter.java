@@ -58,10 +58,8 @@ public class RxMvpPresenter<V extends MvpView> extends MvpBasePresenter<V> {
     @Override
     public void detachView() {
         super.detachView();
-        if (mCompositeDisposables != null) {
-            mCompositeDisposables.clear();
-            mCompositeDisposables = null;
-        }
+        clearCompositeDisposables();
+        mCompositeDisposables = null;
     }
 
     // ========================================================================
@@ -70,6 +68,12 @@ public class RxMvpPresenter<V extends MvpView> extends MvpBasePresenter<V> {
     protected void addDisposable(@NonNull Disposable s) {
         if (mCompositeDisposables != null) {
             mCompositeDisposables.add(s);
+        }
+    }
+
+    protected void clearCompositeDisposables() {
+        if (mCompositeDisposables != null) {
+            mCompositeDisposables.clear();
         }
     }
 

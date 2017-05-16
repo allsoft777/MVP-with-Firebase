@@ -82,6 +82,7 @@ public class ClipListPresenter extends RxMvpPresenter<ClipListView> {
     }
 
     public void fetchClipListFromRepository(@Nullable String lastLoadedItemKey, final boolean filterFavouritesItem) {
+        clearCompositeDisposables();
         if (!NetworkUtils.isInternetOn(MainApplication.getAppContext())) {
             getView().renderError(new NetworkConException("Network is not connected."));
             return;
@@ -96,6 +97,7 @@ public class ClipListPresenter extends RxMvpPresenter<ClipListView> {
     }
 
     public void removeClipItemsFromRepository(@NonNull List<String> itemKeys) {
+        clearCompositeDisposables();
         getView().showProgressDialog(MainApplication.getRes().getString(R.string.msg_deleting));
         Disposable disposable = Single.zip(
               SummaryTableRef.getInstance().removeClipItems(itemKeys),

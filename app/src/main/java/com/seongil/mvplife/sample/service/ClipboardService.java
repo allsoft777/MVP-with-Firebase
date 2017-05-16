@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.seongil.mvplife.sample.common.utils.LogUtil;
+import com.seongil.mvplife.sample.common.utils.RxTransformer;
 import com.seongil.mvplife.sample.domain.ClipDomain;
 import com.seongil.mvplife.sample.repository.clip.RxFirebaseClipItem;
 import com.seongil.mvplife.sample.repository.common.RepoTableContracts;
@@ -111,9 +112,11 @@ public class ClipboardService extends Service {
         RxFirebaseClipItem.getInstance().genNewKey()
               .flatMap(newItemKey -> SummaryTableRef.getInstance().insertNewItemToRepository(newItemKey, domain))
               .flatMap(newItemKey -> DetailTableRef.getInstance().insertNewItemToRepository(newItemKey, domain))
+              .compose(RxTransformer.asyncSingleStream())
               .subscribe(newItemKey -> {
                   domain.setKey(newItemKey);
-                  ClipListViewSkyRail.getInstance().getSkyRail().send(new ClipListViewSkyRailEvents.InsertedNewItem(domain));
+                  ClipListViewSkyRail.getInstance()
+                        .getSkyRail().send(new ClipListViewSkyRailEvents.InsertedNewItem(domain));
               });
     }
 

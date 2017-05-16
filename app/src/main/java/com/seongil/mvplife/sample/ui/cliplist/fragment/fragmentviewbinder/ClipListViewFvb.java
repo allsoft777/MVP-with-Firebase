@@ -137,6 +137,7 @@ public class ClipListViewFvb extends RxMvpViewBinder {
         mListView.setAdapter(mAdapter);
         mListView.setHasFixedSize(true);
         mListView.setFocusable(false);
+        mListView.setItemAnimator(null);
         addScrollListenerToListView(llm);
     }
 

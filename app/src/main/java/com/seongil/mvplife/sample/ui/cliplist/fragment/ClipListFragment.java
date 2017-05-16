@@ -242,6 +242,7 @@ public class ClipListFragment extends BaseFragment<ClipListView, ClipListPresent
         updateFavouritesState(item, favouritesItemFilterMode);
         mClipListViewBinder.renderLoadingView();
         mClipListViewBinder.initializeListView();
+        mClipListMenuContainerFvb.hideContainer();
         getPresenter().fetchClipListFromRepository("", favouritesItemFilterMode);
     }
 
