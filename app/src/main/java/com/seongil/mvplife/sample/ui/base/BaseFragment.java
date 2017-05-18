@@ -63,6 +63,7 @@ public abstract class BaseFragment<V extends BaseView, P extends MvpPresenter<V>
     private void createProgressDialog() {
         mProgressDialog = new ProgressDialog(getActivity());
         mProgressDialog.setCanceledOnTouchOutside(false);
+        mProgressDialog.setCancelable(false);
         mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
     }
 

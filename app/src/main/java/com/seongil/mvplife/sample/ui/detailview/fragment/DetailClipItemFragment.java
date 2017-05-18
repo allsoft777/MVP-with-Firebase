@@ -155,6 +155,11 @@ public class DetailClipItemFragment
 
     @Override
     public void copyClipItem() {
+        if (TextUtils.isEmpty(mDetailViewBodyContainerFvb.getDomainWithInputData().getTextData().trim())) {
+            renderToastMsg(getString(R.string.err_unable_to_copy_text_to_clipboard));
+            return;
+        }
+
         if (!mDetailViewBodyContainerFvb.isNewItemInsertionMode()) {
             ClipListViewSkyRail.getInstance().getSkyRail().send(
                   new ClipListViewSkyRailEvents.DeletedItem(mDetailViewBodyContainerFvb.getItemKey()));

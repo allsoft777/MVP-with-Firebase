@@ -28,5 +28,6 @@
     <string name="msg_success_to_add_favourites_item">Clip item has been successfully added to Favourites.</string>
     <string name="msg_success_to_remove_favourites_item">Clip item has been successfully removed from Favourites.</string>
 
+    <string name="err_unable_to_copy_text_to_clipboard">Unable to copy text to the clipboard.</string>
     <string name="err_network_connection_failed">Unable to connect to network.</string>
 </resources>
