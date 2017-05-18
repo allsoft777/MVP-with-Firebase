@@ -21,9 +21,8 @@
 <br>
 
 ## Screenshot
-![](./materials/clipdetailview.png)
-![](./materials/clipdetailview.png)
-
+<img src="./materials/cliplistview.png" width="288">___
+<img src="./materials/clipdetailview.png" width="288">
 
 ## Build Settings
 
