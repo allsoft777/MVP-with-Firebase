@@ -30,4 +30,5 @@
 
     <string name="err_unable_to_copy_text_to_clipboard">Unable to copy text to the clipboard.</string>
     <string name="err_network_connection_failed">Unable to connect to network.</string>
+    <string name="err_server_configuration_error">Please, check the server configuration.i.e) SHA certification</string>
 </resources>

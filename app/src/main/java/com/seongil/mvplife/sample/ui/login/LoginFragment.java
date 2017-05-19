@@ -115,6 +115,7 @@ public class LoginFragment extends BaseMvpFragmentV4<LoginView, LoginPresenter> 
                 GoogleSignInAccount account = result.getSignInAccount();
                 firebaseAuthWithGoogle(account);
             } else {
+                renderErrorMsg(getString(R.string.err_server_configuration_error));
                 renderSignedOutUser();
             }
         }

@@ -30,4 +30,5 @@
 
     <string name="err_unable_to_copy_text_to_clipboard">텍스트를 클립보드로 복사 할 수 없습니다.</string>
     <string name="err_network_connection_failed">네트워크에 연결 할 수 없습니다.</string>
+    <string name="err_server_configuration_error">SHA-1 지문이 추가되었는지 혹은 서버 설정에 문제가 없는지 확인 바랍니다.</string>
 </resources>
