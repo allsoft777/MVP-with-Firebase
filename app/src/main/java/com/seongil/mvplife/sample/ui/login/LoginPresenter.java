@@ -49,7 +49,6 @@ public class LoginPresenter extends MvpBasePresenter<LoginView> {
               .getGoogleApiClient(activity)
               .subscribeOn(Schedulers.io())
               .observeOn(AndroidSchedulers.mainThread())
-              .filter(client -> isViewAttached())
               .subscribe(
                     client -> getView().setGoogleApiClient(client),
                     t -> getView().onGoogleApiClientConnectionFailed(t)
@@ -62,7 +61,6 @@ public class LoginPresenter extends MvpBasePresenter<LoginView> {
               .authStateChanged(auth)
               .subscribeOn(Schedulers.io())
               .observeOn(AndroidSchedulers.mainThread())
-              .filter(fireBaseAuth -> isViewAttached())
               .doOnNext(fireBaseAuth -> getView().hideProgressDialog())
               .subscribe(this::handleSucceedAuth, t -> getView().renderErrorMsg(t.getMessage()));
     }
@@ -73,7 +71,6 @@ public class LoginPresenter extends MvpBasePresenter<LoginView> {
               .signInWithCredential(firebaseAuth, credential)
               .subscribeOn(Schedulers.io())
               .observeOn(AndroidSchedulers.mainThread())
-              .filter(task -> isViewAttached())
               .subscribe(
                     result -> getView().onFirebaseAuthWithGoogleCompleted(result),
                     t -> getView().onFirebaseAuthWithGoogleFailed(t)
