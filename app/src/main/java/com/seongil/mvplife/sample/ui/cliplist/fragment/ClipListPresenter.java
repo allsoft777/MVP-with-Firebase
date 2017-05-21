@@ -126,7 +126,8 @@ public class ClipListPresenter extends RxMvpPresenter<ClipListView> {
                   } else {
                       query = ref.orderByKey();
                   }
-                  query = query.limitToLast(LOAD_CLIP_ITEM_PER_CYCLE);
+                  final int reqLoadItemSize = LOAD_CLIP_ITEM_PER_CYCLE;
+                  query = query.limitToLast(reqLoadItemSize);
                   query.addListenerForSingleValueEvent(new ValueEventListener() {
                       @Override
                       public void onDataChange(DataSnapshot dataSnapshot) {
@@ -134,7 +135,7 @@ public class ClipListPresenter extends RxMvpPresenter<ClipListView> {
                               getView().renderEmptyView();
                               return;
                           }
-                          handleReceivedDataSnapshot(dataSnapshot);
+                          handleReceivedDataSnapshot(dataSnapshot, reqLoadItemSize);
                       }
 
                       @Override
@@ -155,7 +156,8 @@ public class ClipListPresenter extends RxMvpPresenter<ClipListView> {
             } else {
                 query = ref.orderByKey();
             }
-            query = query.endAt(lastLoadedItemKey).limitToLast(LOAD_CLIP_ITEM_PER_CYCLE + 1);
+            final int reqLoadItemSize = LOAD_CLIP_ITEM_PER_CYCLE + 1;
+            query = query.endAt(lastLoadedItemKey).limitToLast(reqLoadItemSize);
             query.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -163,7 +165,7 @@ public class ClipListPresenter extends RxMvpPresenter<ClipListView> {
                         getView().renderClipDataList(new ArrayList<>(), false);
                         return;
                     }
-                    handleReceivedDataSnapshot(dataSnapshot);
+                    handleReceivedDataSnapshot(dataSnapshot, LOAD_CLIP_ITEM_PER_CYCLE + 1);
                 }
 
                 @Override
@@ -173,10 +175,10 @@ public class ClipListPresenter extends RxMvpPresenter<ClipListView> {
         });
     }
 
-    private void handleReceivedDataSnapshot(DataSnapshot dataSnapshot) {
+    private void handleReceivedDataSnapshot(DataSnapshot dataSnapshot, int reqSize) {
         Observable.create(new ConvertDataSnapshotToDomainListOnSubscribe(dataSnapshot))
               .compose(RxTransformer.asyncObservableStream())
-              .subscribe(list -> getView().renderClipDataList(list, list.size() == LOAD_CLIP_ITEM_PER_CYCLE));
+              .subscribe(list -> getView().renderClipDataList(list, list.size() == reqSize));
     }
 
     private Query filterFavouritesItem(Query query) {
