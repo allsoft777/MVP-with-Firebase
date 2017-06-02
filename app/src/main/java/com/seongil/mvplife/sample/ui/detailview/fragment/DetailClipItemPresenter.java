@@ -74,6 +74,7 @@ public class DetailClipItemPresenter extends RxMvpPresenter<DetailClipItemView> 
               DetailTableRef.getInstance().deleteClipItem(itemKey),
               (result1, result2) -> result1 && result2)
               .compose(RxTransformer.asyncSingleStream())
+              .filter(___ -> isViewAttached())
               .subscribe(result -> getView().notifyRemovedItem(itemKey), t -> getView().renderError(t));
         addDisposable(disposable);
     }
@@ -82,6 +83,7 @@ public class DetailClipItemPresenter extends RxMvpPresenter<DetailClipItemView> 
         Disposable disposable = DetailTableRef.getInstance().getDetailPostItemDatabaseRef(itemKey)
               .flatMap(this::addListenerForSingleValueEvent)
               .compose(RxTransformer.asyncObservableStream())
+              .filter(___ -> isViewAttached())
               .subscribe(___ -> {}, t -> getView().renderError(t));
         addDisposable(disposable);
     }
@@ -92,6 +94,7 @@ public class DetailClipItemPresenter extends RxMvpPresenter<DetailClipItemView> 
               .flatMap(newKey -> SummaryTableRef.getInstance().insertNewItemToRepository(newKey, domain))
               .flatMap(newKey -> DetailTableRef.getInstance().insertNewItemToRepository(newKey, domain))
               .compose(RxTransformer.asyncSingleStream())
+              .filter(___ -> isViewAttached())
               .subscribe(itemKey -> {
                   domain.setKey(itemKey);
                   getView().notifyInsertionSuccess(domain);
@@ -105,6 +108,7 @@ public class DetailClipItemPresenter extends RxMvpPresenter<DetailClipItemView> 
               DetailTableRef.getInstance().updateClipItemToRepository(domain),
               (result1, result2) -> result2)
               .compose(RxTransformer.asyncSingleStream())
+              .filter(___ -> isViewAttached())
               .subscribe(result -> getView().notifyUpdatedClipItem(result), t -> getView().renderError(t));
         addDisposable(disposable);
     }
@@ -115,6 +119,7 @@ public class DetailClipItemPresenter extends RxMvpPresenter<DetailClipItemView> 
               DetailTableRef.getInstance().updateFavouritesItemState(key, favouritesItem),
               (result1, result2) -> result1 && result2)
               .compose(RxTransformer.asyncSingleStream())
+              .filter(___ -> isViewAttached())
               .subscribe(
                     result -> getView().notifyUpdatedFavoriteState(favouritesItem),
                     t -> getView().renderError(t)

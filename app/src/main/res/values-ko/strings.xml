@@ -20,6 +20,7 @@
     <string name="msg_deleting">삭제 중…</string>
     <string name="msg_updating">수정사항 저장 중…</string>
     <string name="msg_loading">불러오는 중…</string>
+    <string name="msg_signing_in">로그인 중…</string>
     <string name="msg_copy_to_clipboard">클립보드에 복사하였습니다.</string>
     <string name="msg_no_more_item">더이상 항목이 없습니다.</string>
     <string name="msg_touch_to_add_item">항목을 추가하려면 여기를 터치하세요.</string>

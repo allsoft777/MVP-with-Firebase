@@ -11,9 +11,7 @@ import com.google.firebase.auth.GoogleAuthProvider;
 import com.seongil.mvplife.base.MvpBasePresenter;
 import com.seongil.mvplife.sample.common.firebase.auth.RxFirebaseAuth;
 import com.seongil.mvplife.sample.common.google.RxGoogleApiClient;
-
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
+import com.seongil.mvplife.sample.common.utils.RxTransformer;
 
 /**
  * @author seong-il, kim
@@ -47,8 +45,8 @@ public class LoginPresenter extends MvpBasePresenter<LoginView> {
     public void signInGoogle(@NonNull FragmentActivity activity) {
         RxGoogleApiClient.getInstance()
               .getGoogleApiClient(activity)
-              .subscribeOn(Schedulers.io())
-              .observeOn(AndroidSchedulers.mainThread())
+              .compose(RxTransformer.asyncSingleStream())
+              .filter(___ -> isViewAttached())
               .subscribe(
                     client -> getView().setGoogleApiClient(client),
                     t -> getView().onGoogleApiClientConnectionFailed(t)
@@ -56,12 +54,10 @@ public class LoginPresenter extends MvpBasePresenter<LoginView> {
     }
 
     public void checkFirebaseAuthState(@NonNull FirebaseAuth auth) {
-        getView().showProgressDialog();
         RxFirebaseAuth.getInstance()
               .authStateChanged(auth)
-              .subscribeOn(Schedulers.io())
-              .observeOn(AndroidSchedulers.mainThread())
-              .doOnNext(fireBaseAuth -> getView().hideProgressDialog())
+              .compose(RxTransformer.asyncObservableStream())
+              .filter(___ -> isViewAttached())
               .subscribe(this::handleSucceedAuth, t -> getView().renderErrorMsg(t.getMessage()));
     }
 
@@ -69,8 +65,8 @@ public class LoginPresenter extends MvpBasePresenter<LoginView> {
         AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
         RxFirebaseAuth.getInstance()
               .signInWithCredential(firebaseAuth, credential)
-              .subscribeOn(Schedulers.io())
-              .observeOn(AndroidSchedulers.mainThread())
+              .compose(RxTransformer.asyncSingleStream())
+              .filter(___ -> isViewAttached())
               .subscribe(
                     result -> getView().onFirebaseAuthWithGoogleCompleted(result),
                     t -> getView().onFirebaseAuthWithGoogleFailed(t)

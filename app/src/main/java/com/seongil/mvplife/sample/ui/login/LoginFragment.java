@@ -112,6 +112,7 @@ public class LoginFragment extends BaseMvpFragmentV4<LoginView, LoginPresenter> 
         if (requestCode == RC_SIGN_IN) {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             if (result.isSuccess()) {
+                showProgressDialog();
                 GoogleSignInAccount account = result.getSignInAccount();
                 firebaseAuthWithGoogle(account);
             } else {
@@ -125,7 +126,7 @@ public class LoginFragment extends BaseMvpFragmentV4<LoginView, LoginPresenter> 
     public void showProgressDialog() {
         if (mProgressDialog == null) {
             mProgressDialog = new ProgressDialog(getActivity());
-            mProgressDialog.setMessage(getString(R.string.msg_loading));
+            mProgressDialog.setMessage(getString(R.string.msg_signing_in));
             mProgressDialog.setIndeterminate(true);
         }
         mProgressDialog.show();
@@ -140,6 +141,7 @@ public class LoginFragment extends BaseMvpFragmentV4<LoginView, LoginPresenter> 
 
     @Override
     public void renderErrorMsg(String msg) {
+        hideProgressDialog();
         Toast.makeText(getActivity().getApplicationContext(), msg, Toast.LENGTH_LONG).show();
     }
 
@@ -159,13 +161,13 @@ public class LoginFragment extends BaseMvpFragmentV4<LoginView, LoginPresenter> 
 
     @Override
     public void renderSignedInUser(FirebaseUser firebaseUser) {
+        hideProgressDialog();
         mSignInBtn.setVisibility(View.GONE);
         launchMainView();
     }
 
     @Override
     public void renderSignedOutUser() {
-        hideProgressDialog();
         mSignInBtn.setVisibility(View.VISIBLE);
     }
 
@@ -176,13 +178,11 @@ public class LoginFragment extends BaseMvpFragmentV4<LoginView, LoginPresenter> 
 
     @Override
     public void onFirebaseAuthWithGoogleCompleted(Task<AuthResult> authResultTask) {
-        hideProgressDialog();
         Log.i(TAG, "onFirebaseAuthWithGoogleCompleted");
     }
 
     @Override
     public void onFirebaseAuthWithGoogleFailed(Throwable t) {
-        hideProgressDialog();
         if (t instanceof FirebaseNetworkException) { // explicit exception
             renderErrorMsg("Network Connection Error.");
             return;

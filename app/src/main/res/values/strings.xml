@@ -20,6 +20,7 @@
     <string name="msg_deleting">Deleting…</string>
     <string name="msg_updating">Updating…</string>
     <string name="msg_loading">Loading…</string>
+    <string name="msg_signing_in">Signing in…</string>
     <string name="msg_copy_to_clipboard">Copy to clipboard.</string>
     <string name="msg_no_more_item">There is no longer any item.</string>
     <string name="msg_touch_to_add_item">Touch here to add an item.</string>

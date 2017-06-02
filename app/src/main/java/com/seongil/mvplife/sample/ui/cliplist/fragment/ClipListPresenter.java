@@ -74,6 +74,7 @@ public class ClipListPresenter extends RxMvpPresenter<ClipListView> {
               DetailTableRef.getInstance().updateFavouritesItemState(itemKey, isFavouritesItem),
               (result1, result2) -> result1 && result2)
               .compose(RxTransformer.asyncSingleStream())
+              .filter(___ -> isViewAttached())
               .subscribe(
                     result -> getView().notifyUpdatedFavouritesItem(itemKey, isFavouritesItem),
                     t -> getView().renderError(t)
@@ -92,6 +93,7 @@ public class ClipListPresenter extends RxMvpPresenter<ClipListView> {
               .flatMap(user -> SummaryTableRef.getInstance().getSummaryPostsDatabaseRef(user))
               .flatMap(ref -> fetchDataFromRepository(ref, lastLoadedItemKey, filterFavouritesItem))
               .compose(RxTransformer.asyncObservableStream())
+              .filter(___ -> isViewAttached())
               .subscribe();
         addDisposable(disposable);
     }
@@ -104,6 +106,7 @@ public class ClipListPresenter extends RxMvpPresenter<ClipListView> {
               DetailTableRef.getInstance().removeClipItems(itemKeys),
               (result1, result2) -> result1 && result2)
               .compose(RxTransformer.asyncSingleStream())
+              .filter(___ -> isViewAttached())
               .subscribe(result -> getView().notifyRemovedItems(itemKeys), t -> getView().renderError(t));
         addDisposable(disposable);
     }
@@ -131,6 +134,9 @@ public class ClipListPresenter extends RxMvpPresenter<ClipListView> {
                   query.addListenerForSingleValueEvent(new ValueEventListener() {
                       @Override
                       public void onDataChange(DataSnapshot dataSnapshot) {
+                          if (!isViewAttached()) {
+                              return;
+                          }
                           if (dataSnapshot.getValue() == null) {
                               getView().renderEmptyView();
                               return;
@@ -161,6 +167,9 @@ public class ClipListPresenter extends RxMvpPresenter<ClipListView> {
             query.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (!isViewAttached()) {
+                        return;
+                    }
                     if (dataSnapshot.getValue() == null) {
                         getView().renderClipDataList(new ArrayList<>(), false);
                         return;
@@ -178,6 +187,7 @@ public class ClipListPresenter extends RxMvpPresenter<ClipListView> {
     private void handleReceivedDataSnapshot(DataSnapshot dataSnapshot, int reqSize) {
         Observable.create(new ConvertDataSnapshotToDomainListOnSubscribe(dataSnapshot))
               .compose(RxTransformer.asyncObservableStream())
+              .filter(___ -> isViewAttached())
               .subscribe(list -> getView().renderClipDataList(list, list.size() == reqSize));
     }
 
@@ -231,6 +241,9 @@ public class ClipListPresenter extends RxMvpPresenter<ClipListView> {
         public void subscribe(ObservableEmitter<List<ClipDomainViewModel>> e) throws Exception {
             try {
                 List<ClipDomainViewModel> list = convertDataSnapshotToDomainViewModel(mDataSnapshot);
+                if (e.isDisposed()) {
+                    return;
+                }
                 e.onNext(list);
             } catch (Exception ex) {
                 e.onError(ex);
